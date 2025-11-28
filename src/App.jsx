@@ -3,7 +3,7 @@ import { createContext } from 'react'
 import { useContext } from 'react'
 import { CssBaseline } from '@mui/material';
 import Login from './Pages/Login';
-import { createBrowserRouter, RouterProvider,HashRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider,createHashRouter } from "react-router-dom";
 import Template from './Template';
 import ProtectedRoute from './ProtoctedRouted';
 import Home from './Pages/Home';
@@ -40,9 +40,7 @@ const routes = [
     ],
   },
 ];
-const router = createBrowserRouter(routes, {
-  basename: "/Baito_Kanri_Asahi",
-});
+const router = createHashRouter(routes);
 
 export function useApp(){
   return useContext(AppContext);
