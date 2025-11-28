@@ -12,38 +12,37 @@ import WorkList from './Pages/WorkList';
 
 const AppContext=createContext();
 
-const router = createBrowserRouter([
-	{
-		path: "/",
-		element: <Template />,
-		children: [
-			{
-				path: "/",
-				element: <Login />,
-			},
-			{
-				path:"/home",
-				element:(
-					<ProtectedRoute>
-						<Home/>
-					</ProtectedRoute>
-				)
-
-			},
-			{
-				path:"/home/worklist",
-				element:(
-					<ProtectedRoute>
-						<WorkList/>
-					</ProtectedRoute>
-				)
-			}
-		],
-	},
-	{
-    	basename: "/Baito_Kanri_Asahi" 
-  	}
-]);
+const routes = [
+  {
+    path: "/",
+    element: <Template />,
+    children: [
+      {
+        path: "/",
+        element: <Login />,
+      },
+      {
+        path: "/home",
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/home/worklist",
+        element: (
+          <ProtectedRoute>
+            <WorkList />
+          </ProtectedRoute>
+        ),
+      }
+    ],
+  },
+];
+const router = createBrowserRouter(routes, {
+  basename: "/Baito_Kanri_Asahi",
+});
 
 export function useApp(){
   return useContext(AppContext);
