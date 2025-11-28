@@ -14,7 +14,7 @@ export default function Login(){
 	const{setGlobalMsg}=useApp();
     return(
         <Box  sx={{
-                width: "80%",         
+                width: {xs:"90%",sm:"80%",md:"70%"},         
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -50,6 +50,7 @@ export default function Login(){
 						flexDirection: "column",
 						gap: 2,
 						mt: 2,
+						
 					}}>
 					<TextField
 						placeholder="Email"
@@ -59,7 +60,6 @@ export default function Login(){
 						type={showPassword ? "text" : "password"}
 						placeholder="Password"
 						fullWidth
-						
 					/>
 					<IconButton edge="start" fullWidth onClick={() => setShowPassword(!showPassword)}>
 							{showPassword ? <Typography  display={'flex'} justifyContent={'left'}><VisibilityOff /> Hide Password</Typography>: <Typography display={'flex'}><Visibility /> Show Password</Typography>}
