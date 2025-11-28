@@ -40,6 +40,9 @@ const router = createBrowserRouter([
 			}
 		],
 	},
+	{
+    	basename: "/Baito_Kanri_Asahi" 
+  	}
 ]);
 
 export function useApp(){
