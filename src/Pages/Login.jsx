@@ -38,7 +38,7 @@ export default function Login(){
 				sx={{ mt: 2 }}>
                 All fields required
             </Alert>
-            <form onSubmit={e => {
+            <form style={{width:"75%"}} onSubmit={e => {
 					e.preventDefault();
 					setAuth(true);
 					navigate("/home");
@@ -50,20 +50,31 @@ export default function Login(){
 						flexDirection: "column",
 						gap: 2,
 						mt: 2,
-						
+						width:"100%",
 					}}>
 					<TextField
 						placeholder="Email"
 						fullWidth
 					/>
 					<TextField
-						type={showPassword ? "text" : "password"}
-						placeholder="Password"
-						fullWidth
+					type={showPassword ? "text" : "password"}
+					placeholder="Password"
+					fullWidth
+					InputProps={{
+						endAdornment: (
+						<InputAdornment position="end">
+							<IconButton
+							onClick={() => setShowPassword(!showPassword)}
+							edge="end"
+							>
+							{showPassword ? <VisibilityOff /> : <Visibility />}
+							</IconButton>
+						</InputAdornment>
+						),
+					}}
 					/>
-					<IconButton edge="start" fullWidth onClick={() => setShowPassword(!showPassword)}>
-							{showPassword ? <Typography  display={'flex'} justifyContent={'left'}><VisibilityOff /> Hide Password</Typography>: <Typography display={'flex'}><Visibility /> Show Password</Typography>}
-					</IconButton>
+
+					
 					<Button
 						type="submit"
 						variant="contained"
