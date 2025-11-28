@@ -42,7 +42,7 @@ export default function Login(){
 					e.preventDefault();
 					setAuth(true);
 					navigate("/home");
-					setGlobalMsg("Login Successfully");
+					setGlobalMsg("Login Successfully");	
 				}}>
                 <Box
 					sx={{

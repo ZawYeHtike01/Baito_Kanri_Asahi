@@ -14,7 +14,7 @@ export default function Template(){
 			
 			<Container 
 				maxWidth="sm"
-				sx={{height:"100%",display:"flex",justifyContent:"center",alignItems:"top",flexDirection:"column" }}>
+				sx={{height:"100%",display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column" }}>
 					{auth && (
 				<>
 					<Header/>

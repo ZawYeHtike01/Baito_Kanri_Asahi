@@ -12,15 +12,22 @@ import logo from '../assets/logo.png'
 
 export default function Header(){
     const {setShowDrawer}=useApp();
+	const location=useLocation();
+	const navigate=useNavigate();
     return(
         <AppBar>
             <Toolbar>
-                <IconButton
+				{location.pathname==="/home"?(<IconButton
 						color="inherit"
 						edge="start"
 						onClick={() => setShowDrawer(true)}>
 						<MenuIcon />
-				</IconButton>
+				</IconButton>):(
+					<IconButton onClick={()=>navigate("/home")}>
+						<BackIcon></BackIcon>
+					</IconButton>
+				)}
+                
                 <Box
 				component="img"
 				src={logo}
