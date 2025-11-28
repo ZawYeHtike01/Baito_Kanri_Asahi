@@ -8,5 +8,5 @@ export default defineConfig({
     port:3000,
     open:true,
   },
-  base: "./",
+  base: "/Baito_Kanri_Asahi/",
 })
