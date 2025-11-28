@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children }) {
 	const { auth } = useApp();
     
 	if (!auth) {
-		return <Link to="/login"/>;
+		return <Link to="/"/>;
 	}
 
 	return children;

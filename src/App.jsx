@@ -47,7 +47,7 @@ export function useApp(){
 }
 
 function App() {
-  const [auth, setAuth] = useState(false);
+  const [auth, setAuth] = useState(true);
   const [showDrawer,setShowDrawer]=useState(false);
   const [globalMsg, setGlobalMsg ]=useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
