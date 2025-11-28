@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Template from './Template';
 import ProtectedRoute from './ProtoctedRouted';
 import Home from './Pages/Home';
+import WorkList from './Pages/WorkList';
 
 
 const AppContext=createContext();
@@ -28,6 +29,14 @@ const router = createBrowserRouter([
 					</ProtectedRoute>
 				)
 
+			},
+			{
+				path:"/home/worklist",
+				element:(
+					<ProtectedRoute>
+						<WorkList/>
+					</ProtectedRoute>
+				)
 			}
 		],
 	},

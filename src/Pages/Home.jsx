@@ -14,6 +14,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import { useApp } from "../App";
 import updateLocale from "dayjs/plugin/updateLocale";
+import { useNavigate } from "react-router-dom";
 
 dayjs.extend(updateLocale);
 dayjs.updateLocale("en", {
@@ -21,8 +22,9 @@ dayjs.updateLocale("en", {
 });
 export default function Home(){
     const{setSelectedDate}=useApp();
+    const navigate=useNavigate();
   return (
-    <Box sx={{mt:1}}>
+    <Box sx={{}}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar defaultValue={dayjs()} sx={{ transform: {xs:"scale(1.3)",sm:"scale(1.4)",md:"scale(1.7)"},
                 transformOrigin: "center",
@@ -54,6 +56,7 @@ export default function Home(){
             }} onChange={(newValue)=>{
                 const formmed=dayjs(newValue).format("YYYY-MM-DD");
                 setSelectedDate(formmed);
+                navigate("/home/worklist")
             }}
             />
         </LocalizationProvider>
