@@ -3,7 +3,7 @@ import { createContext } from 'react'
 import { useContext } from 'react'
 import { CssBaseline } from '@mui/material';
 import Login from './Pages/Login';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider,HashRouter } from "react-router-dom";
 import Template from './Template';
 import ProtectedRoute from './ProtoctedRouted';
 import Home from './Pages/Home';
@@ -34,7 +34,7 @@ const routes = [
         element: (
           <ProtectedRoute>
             <WorkList />
-          </ProtectedRoute>
+          </ProtectedRoute>	
         ),
       }
     ],
@@ -49,13 +49,15 @@ export function useApp(){
 }
 
 function App() {
-  const [auth, setAuth] = useState(true);
+  const [auth, setAuth] = useState(false);
   const [showDrawer,setShowDrawer]=useState(false);
   const [globalMsg, setGlobalMsg ]=useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   return (
     <AppContext.Provider value={{auth,setAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
-      <RouterProvider router={router} />
+     
+		<RouterProvider router={router} />
+	  
       <CssBaseline/>
     </AppContext.Provider>
   )
