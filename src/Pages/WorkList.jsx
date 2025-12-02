@@ -10,7 +10,7 @@ export default function WorkList(){
         const navigate=useNavigate();
         return(
         <Box sx={{
-                  width: {xs:"90%",sm:"80%",md:"40%"},
+                width: {xs:"90%",sm:"50%",md:"35%"},
                 height:600,
                 position:"relative",
                 border:"1px solid rgba(255, 255, 255, 0.3)",
@@ -19,6 +19,7 @@ export default function WorkList(){
                 display:"flex",
                 flexDirection:"column",
                 alignItems:"center",
+                marginTop: {xs:"70px",sm:"70px",md:"70px"},
         }}>
             <Box sx={{
                 display:'flex',
