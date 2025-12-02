@@ -14,7 +14,7 @@ export default function Login(){
 	const{setGlobalMsg}=useApp();
     return(
         <Box  sx={{
-                width: {xs:"90%",sm:"80%",md:"70%"},         
+                width: {xs:"90%",sm:"80%",md:"40%"},         
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",

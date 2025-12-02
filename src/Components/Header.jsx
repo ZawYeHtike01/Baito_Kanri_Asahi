@@ -15,7 +15,7 @@ export default function Header(){
 	const location=useLocation();
 	const navigate=useNavigate();
     return(
-        <AppBar>
+        <AppBar >
             <Toolbar>
 				{location.pathname==="/home"?(<IconButton
 						color="inherit"

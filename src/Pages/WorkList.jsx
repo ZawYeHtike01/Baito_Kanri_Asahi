@@ -10,15 +10,15 @@ export default function WorkList(){
         const navigate=useNavigate();
         return(
         <Box sx={{
-                mt:8,
-                width:"90%",
+                  width: {xs:"90%",sm:"80%",md:"40%"},
                 height:600,
                 position:"relative",
                 border:"1px solid rgba(255, 255, 255, 0.3)",
                 boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
                 borderRadius:5,
                 display:"flex",
-                flexDirection:"column"
+                flexDirection:"column",
+                alignItems:"center",
         }}>
             <Box sx={{
                 display:'flex',
@@ -32,7 +32,7 @@ export default function WorkList(){
                 
             </Box>
             <Box>
-                <Typography sx={{textAlign:'center'}}>Ysssjjjjj Public Holidays</Typography>
+                <Typography sx={{textAlign:'center'}}>Public Holidays</Typography>
             </Box>
             <IconButton sx={{
                     bgcolor: "primary.main",

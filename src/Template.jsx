@@ -10,19 +10,22 @@ export default function Template(){
 	const {auth}=useApp();
 	const { globalMsg, setGlobalMsg } = useApp();
     return(
-        <Box sx={{width:"100%",height:"100vh" }}>
-			
-			<Container 
-				maxWidth="sm"
-				sx={{height:"100%",display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column" }}>
+        <Box sx={{height:"100vh" }}>
 					{auth && (
-				<>
-					<Header/>
-					<AppDrawer/>
-				</>
-			)}
+						<>
+							<Header/>
+							<AppDrawer/>
+						</>
+						
+					)}
+					
+			<Container
+				sx={{height:"100%",display:"flex",justifyContent:"center",alignItems:"center" }}>
+					
 				<Outlet />
+				
 			</Container>
+			
 			<Snackbar
 				anchorOrigin={{
 					horizontal: "center",
