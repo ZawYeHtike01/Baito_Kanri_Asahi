@@ -11,7 +11,8 @@ export default function WorkList(){
         return(
         <Box sx={{
                 width: {xs:"90%",sm:"50%",md:"35%"},
-                height:600,
+                height:550,
+                
                 position:"relative",
                 border:"1px solid rgba(255, 255, 255, 0.3)",
                 boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
