@@ -92,7 +92,7 @@ export default function AppDrawer(){
 								<ListItemButton onClick={()=>{
                                     navigate("/");
                                     setAuth(false);
-									setShowDrawer(false);
+									setShowDrawer(false)
                                 }}>
 									<ListItemIcon>
 										<LogoutIcon color="error" />
