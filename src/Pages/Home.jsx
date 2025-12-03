@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../App";
 import { useNavigate } from "react-router-dom";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { ArrowBack, ArrowForward, Flag } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
 import { FormartDate } from "./Data";
 
@@ -59,6 +59,11 @@ export default function Home() {
     if(!date) return false;
     const filterDate=JapanseHolidays.filter(i=> i.date === FormartDate(date));
     if(filterDate.length>0){
+      return true;
+    }else return false;
+  }
+  const isSunday=(day)=>{
+    if(day==="Sat" || day==="Sun"){
       return true;
     }else return false;
   }
@@ -123,7 +128,8 @@ export default function Home() {
               textAlign: "center",
               fontWeight: "600",
               fontSize: "12px",
-              color: "#666",
+              color: isSunday(day)? "red":"#666",
+              border:"1px solid #ddd"
             }}
           >
             {day}
