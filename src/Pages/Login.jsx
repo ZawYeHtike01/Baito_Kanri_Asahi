@@ -52,13 +52,13 @@ export default function Login(){
 						mt: 2,
 						width:"100%",
 					}}>
-					<TextField
-						placeholder="Email"
+					<TextField id="outlined-basic" label="Email" variant="outlined"
+						
 						fullWidth
 					/>
 					<TextField
 					type={showPassword ? "text" : "password"}
-					placeholder="Password"
+					id="outlined-basic" label="Password" variant="outlined"
 					fullWidth
 					InputProps={{
 						endAdornment: (
