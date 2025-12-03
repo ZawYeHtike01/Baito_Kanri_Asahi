@@ -12,7 +12,9 @@ export default function WorkList(){
         const schedules = [
             { name: "Kura", time: "22:00-23:00" },
             { name: "Work", time: "18:00-22:00" },
-            { name: "Meeting", time: "14:00-15:30" }
+            { name: "Meeting", time: "14:00-15:30" },
+            { name: "Kura", time: "22:00-23:00" },
+            
             ];
         const filteredHoliday = JapanseHolidays.filter(i => i.date === selectedDate);
         return(
@@ -42,7 +44,7 @@ export default function WorkList(){
             <Box>
                 <Typography sx={{textAlign:'center'}}>{filteredHoliday.length > 0 ? filteredHoliday[0].localName : ""}</Typography>
             </Box>
-            <Box sx={{width:"70%",overflow:"auto"}}>
+            <Box sx={{width:{xs:"90%",sm:"90%",md:"75%"},overflow:"auto"}}>
                 <List
                     sx={{
                         width: "100%",
