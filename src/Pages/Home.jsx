@@ -3,10 +3,11 @@ import { useApp } from "../App";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
+import { FormartDate } from "./Data";
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { setSelectedDate } = useApp();
+  const { setSelectedDate,JapanseHolidays } = useApp();
   const navigate = useNavigate();
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -53,6 +54,14 @@ export default function Home() {
     const today = new Date();
     return date.toDateString() === today.toDateString();
   };
+
+  const isHolidays=(date)=>{
+    if(!date) return false;
+    const filterDate=JapanseHolidays.filter(i=> i.date === FormartDate(date));
+    if(filterDate.length>0){
+      return true;
+    }else return false;
+  }
 
   const days = getDaysInMonth(currentDate);
 
@@ -132,12 +141,14 @@ export default function Home() {
         }}
       >
         {days.map((date, index) => (
+          
           <Box
             key={index}
             onClick={() => {
               if (date) {
+                const dd=FormartDate(date);
                 navigate("/home/worklist");
-                setSelectedDate(date.toISOString().split("T")[0]);
+                setSelectedDate(dd);
               }
             }}
             sx={{
@@ -155,20 +166,20 @@ export default function Home() {
               },
             }}
           >
-            {date && (
+            {date && ( 
               <Box sx={{ textAlign: "center",display:"flex",flexDirection:"column",alignItems:"center" }}>
                 <Box
                   sx={{
                     fontSize: "14px",
                     fontWeight: isToday(date) ? "700" : "400",
-                    color: isToday(date) ? "white" : "#333",
+                    color: isToday(date) ? "white" : isHolidays(date)? "white": "#333",
                     width: "28px",
                     height: "28px",
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: isToday(date) ? "#1976d2" : "transparent",
+                    backgroundColor: isToday(date) ? "#1976d2" : isHolidays(date)? "red" : "transparent",
                   }}
                 >
                   {date.getDate()}
