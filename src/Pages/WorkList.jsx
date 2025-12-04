@@ -19,8 +19,8 @@ export default function WorkList(){
         const filteredHoliday = JapanseHolidays.filter(i => i.date === selectedDate);
         return(
         <Box sx={{
-                width: {xs:"90%",sm:"50%",md:"35%"},
-                height:550,
+                width: {xs:"90%",sm:"50%",md:"30%"},
+                height:600,
                 position:"relative",
                 border:"1px solid rgba(255, 255, 255, 0.3)",
                 boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
@@ -44,7 +44,7 @@ export default function WorkList(){
             <Box>
                 <Typography sx={{textAlign:'center'}}>{filteredHoliday.length > 0 ? filteredHoliday[0].localName : ""}</Typography>
             </Box>
-            <Box sx={{width:{xs:"90%",sm:"90%",md:"75%"},overflow:"auto"}}>
+            <Box sx={{width:{xs:"90%",sm:"90%",md:"85%"},overflow:"auto"}}>
                 <List
                     sx={{
                         width: "100%",
@@ -99,7 +99,7 @@ export default function WorkList(){
                 
                 
             </Box>
-            <IconButton sx={{
+            <IconButton onClick={()=>navigate("/home/worklist/addwork")} sx={{
                     bgcolor: "primary.main",
                     color: "white",
                     "&:hover": {

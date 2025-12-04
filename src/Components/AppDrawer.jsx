@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 export default function AppDrawer(){
     const navigate = useNavigate();
     const {showDrawer,setShowDrawer}=useApp();
-    const {setAuth}=useApp();
+    const {setAuth,setGlobalMsg}=useApp();
     return(
         <div>
             <Drawer open={showDrawer} onClose={()=>setShowDrawer(false)}>
@@ -92,7 +92,8 @@ export default function AppDrawer(){
 								<ListItemButton onClick={()=>{
                                     navigate("/");
                                     setAuth(false);
-									setShowDrawer(false)
+									setShowDrawer(false);
+									setGlobalMsg("Logout Successfully");
                                 }}>
 									<ListItemIcon>
 										<LogoutIcon color="error" />
