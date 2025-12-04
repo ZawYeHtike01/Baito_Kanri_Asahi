@@ -23,7 +23,11 @@ export default function Header(){
 						onClick={() => setShowDrawer(true)}>
 						<MenuIcon />
 				</IconButton>):(
-					<IconButton onClick={()=>navigate("/home")}>
+					<IconButton onClick={()=>{
+						if(location.pathname==="/home/worklist/addwork"){
+							navigate("/home/worklist");
+						}else
+						navigate("/home")}}>
 						<BackIcon></BackIcon>
 					</IconButton>
 				)}

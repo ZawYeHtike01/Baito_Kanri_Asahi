@@ -1,8 +1,7 @@
 import { Alert, Box, Button, TextField, Typography,InputAdornment,IconButton } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
 import { useApp } from "../App";
 import { useNavigate,Link } from "react-router-dom";
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.png';
 import { useState } from "react";
 import { Visibility,VisibilityOff } from "@mui/icons-material";
 
@@ -14,7 +13,7 @@ export default function Login(){
 	const{setGlobalMsg}=useApp();
     return(
         <Box  sx={{
-                width: {xs:"90%",sm:"50%",md:"35%"},         
+                width: {xs:"85%",sm:"50%",md:"27%"},         
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -53,7 +52,6 @@ export default function Login(){
 						width:"100%",
 					}}>
 					<TextField id="outlined-basic" label="Email" variant="outlined"
-						
 						fullWidth
 					/>
 					<TextField
@@ -72,20 +70,17 @@ export default function Login(){
 						</InputAdornment>
 						),
 					}}
-					/>
-
-					
+					/>					
 					<Button
 						type="submit"
 						variant="contained"
 						fullWidth>
 						Login
 					</Button>
-					
 				</Box>
             </form>
             <Typography sx={{ mt: 2, textAlign: "center" }}>
-                Don't have an account?{" "}
+                Don't have an account?
                 <Link to="/">Register</Link>
             </Typography>
         </Box>

@@ -10,7 +10,7 @@ import Home from './Pages/Home';
 import WorkList from './Pages/WorkList';
 import GetJapaneseHolidays from './Pages/Data';
 import { useEffect } from 'react';
-
+import AddWork from './Pages/AddWork';
 const AppContext=createContext();
 
 const routes = [
@@ -37,6 +37,14 @@ const routes = [
             <WorkList />
           </ProtectedRoute>	
         ),
+      },
+      {
+        path:"/home/worklist/addwork",
+        element:(
+          <ProtectedRoute>
+            <AddWork/>
+          </ProtectedRoute>
+        )
       }
     ],
   },
