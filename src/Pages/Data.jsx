@@ -1,5 +1,6 @@
-export default async function GetJapaneseHolidays() {
-    const url=`https://date.nager.at/api/v3/PublicHolidays/${new Date().getFullYear()}/JP`;
+
+export default async function GetJapaneseHolidays(year) {
+    const url=`https://date.nager.at/api/v3/PublicHolidays/${year}/JP`;
             const res=await fetch(url);
             const data=await res.json();
             return data;

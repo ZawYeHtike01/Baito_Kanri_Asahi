@@ -60,17 +60,23 @@ function App() {
   const [showDrawer,setShowDrawer]=useState(false);
   const [globalMsg, setGlobalMsg ]=useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
   
   const [JapanseHolidays,setJapaneseHolidays]=useState([]);
   useEffect(() => {
+     console.log("CURRENT DATE = ", currentDate);
+    console.log("YEAR = ", currentDate.getFullYear());
+
       async function fetchHolidays() {
-        const holidays = await GetJapaneseHolidays();
+        const year = currentDate.getFullYear();
+        const holidays = await GetJapaneseHolidays(year);
         setJapaneseHolidays(holidays);
       }
       fetchHolidays();
-  }, []);
+  }, [currentDate]);
   return (
-    <AppContext.Provider value={{JapanseHolidays,setJapaneseHolidays,auth,setAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
+    <AppContext.Provider value={{currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,auth,setAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
      
 		<RouterProvider router={router} />
 	  

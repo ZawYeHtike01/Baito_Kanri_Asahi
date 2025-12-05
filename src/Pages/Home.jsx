@@ -6,8 +6,8 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { FormartDate } from "./Data";
 
 export default function Home() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const { setSelectedDate,JapanseHolidays } = useApp();
+  
+  const {setSelectedDate,JapanseHolidays,currentDate, setCurrentDate } = useApp();
   const navigate = useNavigate();
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -38,15 +38,21 @@ export default function Home() {
   };
 
   const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-    );
+    const newDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - 1
+  );
+  setCurrentDate(newDate);
+ 
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-    );
+    const newDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1
+  );
+  setCurrentDate(newDate);
+  
   };
 
   const isToday = (date) => {
