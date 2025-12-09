@@ -4,12 +4,15 @@ import { useNavigate,Link } from "react-router-dom";
 import logo from '../assets/logo.png';
 import { useState } from "react";
 import { Visibility,VisibilityOff } from "@mui/icons-material";
+import { useRef } from "react";
 
 export default function Login(){
     const {setAuth}=useApp();
 	const [showPassword,setShowPassword]=useState(false);
 	const navigate=useNavigate();
 	const{setGlobalMsg}=useApp();
+	const emailRef=useRef();
+	const passwordRef=useRef();
     return(
         <Box  sx={{
                 width: {xs:"85%",sm:"50%",md:"27%"},         
@@ -50,10 +53,10 @@ export default function Login(){
 						mt: 2,
 						width:"100%",
 					}}>
-					<TextField id="outlined-basic" label="Email" variant="outlined"
+					<TextField inputRef={emailRef} id="outlined-basic" label="Email" variant="outlined"
 						fullWidth
 					/>
-					<TextField
+					<TextField inputRef={passwordRef}
 					type={showPassword ? "text" : "password"}
 					id="outlined-basic" label="Password" variant="outlined"
 					fullWidth
@@ -80,7 +83,7 @@ export default function Login(){
             </form>
             <Typography sx={{ mt: 2, textAlign: "center" }}>
                 Don't have an account?
-                <Link to="/">Register</Link>
+                <Link to="/signup">Register</Link>
             </Typography>
         </Box>
     )

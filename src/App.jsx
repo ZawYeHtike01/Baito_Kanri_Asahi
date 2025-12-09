@@ -3,7 +3,7 @@ import { createContext } from 'react'
 import { useContext } from 'react'
 import { CssBaseline } from '@mui/material';
 import Login from './Pages/Login';
-import { createBrowserRouter, RouterProvider,createHashRouter } from "react-router-dom";
+import { RouterProvider,createHashRouter } from "react-router-dom";
 import Template from './Template';
 import ProtectedRoute from './ProtoctedRouted';
 import Home from './Pages/Home';
@@ -11,6 +11,7 @@ import WorkList from './Pages/WorkList';
 import GetJapaneseHolidays from './Pages/Data';
 import { useEffect } from 'react';
 import AddWork from './Pages/AddWork';
+import SignUp from './Pages/SignUp';
 const AppContext=createContext();
 
 const routes = [
@@ -45,6 +46,11 @@ const routes = [
             <AddWork/>
           </ProtectedRoute>
         )
+      },{
+        path:"/signup",
+        element:(
+            <SignUp/>
+        )
       }
     ],
   },
@@ -61,15 +67,10 @@ function App() {
   const [globalMsg, setGlobalMsg ]=useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
-  
-  
   const [JapanseHolidays,setJapaneseHolidays]=useState([]);
   useEffect(() => {
-     console.log("CURRENT DATE = ", currentDate);
-    console.log("YEAR = ", currentDate.getFullYear());
-
-      async function fetchHolidays() {
-        const year = currentDate.getFullYear();
+       async function fetchHolidays() {
+      const year = currentDate.getFullYear();
         const holidays = await GetJapaneseHolidays(year);
         setJapaneseHolidays(holidays);
       }

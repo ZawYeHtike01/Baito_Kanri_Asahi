@@ -14,7 +14,6 @@ export default function WorkList(){
             { name: "Work", time: "18:00-22:00" },
             { name: "Meeting", time: "14:00-15:30" },
             { name: "Kura", time: "22:00-23:00" },
-            
             ];
         const filteredHoliday = JapanseHolidays.filter(i => i.date === selectedDate);
         return(
