@@ -10,14 +10,21 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
-
+import { doc,getDoc,setDoc } from "firebase/firestore";
+import { db,auth } from "../Firebase";
+import { useRef } from "react";
+import { useApp } from "../App";
+import { addDoc,collection } from "firebase/firestore";
 export default function AddWork() {
   const [work, setWork] = useState("");
   const [startTime, setStartTime] = useState(dayjs());
   const [endTime, setEndTime] = useState(dayjs());
   const [rest, setRest] = useState(dayjs().hour(0).minute(0));
   const [openModal, setOpenModal] = useState(false);
-   
+  const workNameRef=useRef();
+  const salaryRef=useRef();
+  const {workname,setWorkName,setGlobalMsg}=useApp();
+   console.log(workname);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box
@@ -55,8 +62,11 @@ export default function AddWork() {
             }
               }
             >
-              <MenuItem value="morning">Morning Shift</MenuItem>
-              <MenuItem value="evening">Evening Shift</MenuItem>
+            {workname.map(e=>(
+                <MenuItem  key={e.id} value={e.work}>{e.work}</MenuItem>
+                )
+                
+            )}
               <MenuItem value="others">others</MenuItem>
             </Select>
           </FormControl>
@@ -110,9 +120,25 @@ export default function AddWork() {
             <Typography variant="h6">
               Add New Work
             </Typography>
-            <TextField sx={{mt:3}} id="outlined-basic" label="Name" variant="outlined" fullWidth/>
-            <TextField type="number" sx={{mt:3}} id="outlined-basic" label="Salary" variant="outlined" fullWidth/>
-            <Button sx={{mt:3}} type="submit" variant="contained"fullWidth>Add</Button>
+            <TextField inputRef={workNameRef} sx={{mt:3}} id="outlined-basic" label="Name" variant="outlined" fullWidth/>
+            <TextField inputRef={salaryRef} type="number" sx={{mt:3}} id="outlined-basic" label="Salary" variant="outlined" fullWidth/>
+            <Button onClick={async()=>{
+                const user=auth.currentUser;
+                const worksRef = doc(db, "worksname", user.uid, "works",workNameRef.current.value,);
+                await setDoc(worksRef, {
+                salary: Number(salaryRef.current.value),
+                });
+                setWorkName(prev => [
+                    ...prev,
+                    {
+                        work: workNameRef.current.value,
+                        salary: Number(salaryRef.current.value)
+                    }
+                    ]);
+                setGlobalMsg("Added Successfully");
+                setOpenModal(false);
+                setWork("");
+            }} sx={{mt:3}} type="submit" variant="contained"fullWidth>Add</Button>
           </Box>
         </Modal>
       </Box>

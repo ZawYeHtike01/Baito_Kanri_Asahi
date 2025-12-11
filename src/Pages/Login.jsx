@@ -12,7 +12,7 @@ import { auth } from "../Firebase";
 
 
 export default function Login(){
-    const {setAuth,setUserData}=useApp();
+    const {setisAuth,setUserData}=useApp();
 	const [showPassword,setShowPassword]=useState(false);
 	const navigate=useNavigate();
 	const{setGlobalMsg}=useApp();
@@ -86,7 +86,7 @@ export default function Login(){
 						setUserData(getdata.data());
 						navigate("/home");
 						setGlobalMsg("Login Successfully");	
-						setAuth(true);
+						setisAuth(true);
 					}catch(e){
 						 if (e.code=== "auth/user-not-found" || e.code === "auth/wrong-password" || e.code ==="auth/invalid-credential"){
 							setErrors(()=>({email:true,password:true}));
