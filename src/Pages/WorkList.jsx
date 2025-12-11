@@ -5,15 +5,16 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import {List,ListItem,ListItemText,ListItemIcon} from "@mui/material";
-
+import { doc,getDoc,setDoc,collection,getDocs } from "firebase/firestore";
+import { db,auth } from "../Firebase";
 export default function WorkList(){
         const {selectedDate,JapanseHolidays}=useApp()
         const navigate=useNavigate();
         const schedules = [
-            { name: "Kura", time: "22:00-23:00" },
-            { name: "Work", time: "18:00-22:00" },
-            { name: "Meeting", time: "14:00-15:30" },
-            { name: "Kura", time: "22:00-23:00" },
+            { id:1,name: "Kura", time: "22:00-23:00" },
+            { id:2,name: "Work", time: "18:00-22:00" },
+            { id:3,name: "Meeting", time: "14:00-15:30" },
+            { id:4,name: "Kura", time: "22:00-23:00" },
             ];
         const filteredHoliday = JapanseHolidays.filter(i => i.date === selectedDate);
         return(
@@ -98,7 +99,8 @@ export default function WorkList(){
                 
                 
             </Box>
-            <IconButton onClick={()=>navigate("/home/worklist/addwork")} sx={{
+            <IconButton onClick={()=>{
+                navigate("/home/worklist/addwork")}} sx={{
                     bgcolor: "primary.main",
                     color: "white",
                     "&:hover": {

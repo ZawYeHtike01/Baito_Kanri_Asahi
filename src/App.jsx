@@ -12,7 +12,11 @@ import GetJapaneseHolidays from './Pages/Data';
 import { useEffect } from 'react';
 import AddWork from './Pages/AddWork';
 import SignUp from './Pages/SignUp';
+import { getDocs,collection } from 'firebase/firestore';
+import { db } from './Firebase';
+import { auth } from './Firebase';
 const AppContext=createContext();
+
 
 const routes = [
   {
@@ -62,13 +66,14 @@ export function useApp(){
 }
 
 function App() {
-  const [auth, setAuth] = useState(false);
+  const [isauth, setisAuth] = useState(false);
   const [showDrawer,setShowDrawer]=useState(false);
   const [globalMsg, setGlobalMsg ]=useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [JapanseHolidays,setJapaneseHolidays]=useState([]);
   const [userData,setUserData]=useState();
+  const [workname,setWorkName]=useState([]);
   useEffect(() => {
        async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -77,9 +82,27 @@ function App() {
       }
       fetchHolidays();
   }, [currentDate]);
+  useEffect(() => {
+  async function fetchWorks() {
+    const user = auth.currentUser;
+    if (!user) return; // wait for login
+  
+    const worksRef = collection(db, "worksname", user.uid, "works");
+    const snap = await getDocs(worksRef);
+
+    const list = snap.docs.map(doc => ({
+      work: doc.id,
+      ...doc.data()
+    }));
+
+    setWorkName(list);
+  }
+
+  fetchWorks();
+}, [isauth]); 
   
   return (
-    <AppContext.Provider value={{userData,setUserData,currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,auth,setAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
+    <AppContext.Provider value={{workname,setWorkName,userData,setUserData,currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,isauth, setisAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
      
 		<RouterProvider router={router} />
 	  

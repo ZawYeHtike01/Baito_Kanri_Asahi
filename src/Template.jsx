@@ -7,11 +7,11 @@ import Header from "./Components/Header";
 import AppDrawer from "./Components/AppDrawer";
 
 export default function Template(){
-	const {auth}=useApp();
+	const {isauth}=useApp();
 	const { globalMsg, setGlobalMsg } = useApp();
     return(
         <Box sx={{height:"100vh",display:"flex",flexDirection:"column" }}>
-					{auth && (
+					{isauth && (
 						<Box>
 							<Header/>
 							<AppDrawer/>
