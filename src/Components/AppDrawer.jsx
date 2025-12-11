@@ -21,11 +21,13 @@ import {
 
 import { useApp } from "../App";
 import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../Firebase";
 
 export default function AppDrawer(){
     const navigate = useNavigate();
     const {showDrawer,setShowDrawer}=useApp();
-    const {setAuth,setGlobalMsg}=useApp();
+    const {setAuth,setGlobalMsg,userData}=useApp();
     return(
         <div>
             <Drawer open={showDrawer} onClose={()=>setShowDrawer(false)}>
@@ -57,11 +59,11 @@ export default function AppDrawer(){
 						/>
                         <Box>
                             <Typography sx={{ fontWeight: "bold" }}>
-							    Zaw Ye Htike
+							    {userData.userNameKatakana}
 						    </Typography>
                             <Divider></Divider>
                             <Typography variant="body1" component={'p'}>
-                                G25016
+                                {userData.studentNo}
                             </Typography>
                         </Box>
 						
@@ -89,7 +91,8 @@ export default function AppDrawer(){
 								</ListItemButton>
 							</ListItem>
 							<ListItem>
-								<ListItemButton onClick={()=>{
+								<ListItemButton onClick={async()=>{
+									await signOut(auth);
                                     navigate("/");
                                     setAuth(false);
 									setShowDrawer(false);
