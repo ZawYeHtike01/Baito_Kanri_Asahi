@@ -1,4 +1,4 @@
-import { Alert, Box, Button, TextField, Typography,InputAdornment,IconButton, major } from "@mui/material";
+import { CircularProgress,Alert, Box, Button, TextField, Typography,InputAdornment,IconButton, major } from "@mui/material";
 import { useApp } from "../App";
 import { useNavigate,Link } from "react-router-dom";
 import logo from '../assets/logo.png';
@@ -11,8 +11,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs"
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { db,auth } from "../Firebase";
+import { setDoc,doc } from "firebase/firestore";
 export default function SignUp(){
-    const {setAuth}=useApp();
 	const [showPassword,setShowPassword]=useState(false);
 	const navigate=useNavigate();
 	const{setGlobalMsg}=useApp();
@@ -24,6 +24,7 @@ export default function SignUp(){
     const stunoRef=useRef();
     const majorRef=useRef();
     const [schoolyear,setSchoolyear]=useState();
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({
     name: false,
     katakana: false,
@@ -49,6 +50,21 @@ export default function SignUp(){
 				border: "1px solid rgba(255, 255, 255, 0.3)",
 				boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
             }}>
+            {loading && (
+                            <Box sx={{
+                                position: "fixed",
+                                width: "100%",
+                                height: "100%",
+                                background: "rgba(255, 255, 255, 0.4)",
+                                backdropFilter: "blur(6px)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                zIndex: 2000
+                            }}>
+                                <CircularProgress size={70} />
+                            </Box>
+                        )}
             <Box
 				component="img"
 				src={logo}
@@ -62,7 +78,7 @@ export default function SignUp(){
             </Alert>
             <form style={{width:"75%"}} onSubmit={async(e) => {
 					e.preventDefault();
-					// setAuth(true);
+					setLoading(true);
 					const newErrors = {
                         name: !nameRef.current.value,
                         katakana: !/^[ァ-ンヴー・ー\s]+$/.test(katakanaRef.current.value),
@@ -76,11 +92,35 @@ export default function SignUp(){
                     };	
                     setErrors(newErrors);
                     const hasError=Object.values(newErrors).some(Boolean);
-                    if(hasError) return;
+                    if(hasError) {
+                        setLoading(false);
+                        return;}
                     try{
-                        const userConf=createUserWithEmailAndPassword(auth,emailRef.current.value,confirmpasswordRef.current.value);
+                        const userData= await createUserWithEmailAndPassword(auth,emailRef.current.value,passwordRef.current.value);
+                        const user=userData.user;
+                        const userRef=doc(db,'users',user.uid);
+                        await setDoc(userRef,{
+                            userName:nameRef.current.value,
+                            userNameKatakana:katakanaRef.current.value,
+                            email: emailRef.current.value,
+                            major:majorRef.current.value,
+                            studentNo:stunoRef.current.value,
+                            schoolYear:schoolyear.year(),
+                        },{merge:true})
+                        setGlobalMsg("Sign Up Successfully");
+                       navigate("/");
                     }catch(f){
+                        if(f.code==="auth/email-already-in-use"){
+                           setErrors((prev) => ({ ...prev, email: true }));
+                           const hasError=Object.values(errors).some(Boolean);
+                           if(hasError) {setGlobalMsg("This Email is already used")
+                            return;}
+                        return;
+                        }
                         console.log(f.message);
+                        
+                    }finally{
+                        setLoading(false);
                     }
 				}}>
                 <Box
@@ -97,10 +137,11 @@ export default function SignUp(){
                     <TextField id="outlined-basic" inputRef={katakanaRef} label="Katakana" variant="outlined"
 						fullWidth error={errors.katakana}
                         inputProps={{ lang: "ja" }}
-                        onBlur={(e) => {
-                            e.target.value.replace(/[\u3041-\u3096]/g, ch =>
+                       onBlur={(e) => {
+                        const converted = e.target.value.replace(/[\u3041-\u3096]/g, ch =>
                             String.fromCharCode(ch.charCodeAt(0) + 0x60)
                         );
+                        e.target.value = converted;
                         }}
 
 					/>
