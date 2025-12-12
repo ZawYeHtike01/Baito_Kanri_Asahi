@@ -27,7 +27,7 @@ import { auth } from "../Firebase";
 export default function AppDrawer(){
     const navigate = useNavigate();
     const {showDrawer,setShowDrawer}=useApp();
-    const {setAuth,setGlobalMsg,userData}=useApp();
+    const {setisAuth,setGlobalMsg,userData}=useApp();
     return(
         <div>
             <Drawer open={showDrawer} onClose={()=>setShowDrawer(false)}>
@@ -94,7 +94,7 @@ export default function AppDrawer(){
 								<ListItemButton onClick={async()=>{
 									await signOut(auth);
                                     navigate("/");
-                                    setAuth(false);
+                                    setisAuth(false);
 									setShowDrawer(false);
 									setGlobalMsg("Logout Successfully");
                                 }}>
