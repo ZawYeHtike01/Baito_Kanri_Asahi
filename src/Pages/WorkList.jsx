@@ -7,15 +7,13 @@ import { useNavigate } from "react-router-dom";
 import {List,ListItem,ListItemText,ListItemIcon} from "@mui/material";
 import { doc,getDoc,setDoc,collection,getDocs } from "firebase/firestore";
 import { db,auth } from "../Firebase";
+import { getHourDifference } from "./Data";
 export default function WorkList(){
-        const {selectedDate,JapanseHolidays}=useApp()
+        const {selectedDate,JapanseHolidays,monthCache}=useApp()
         const navigate=useNavigate();
-        const schedules = [
-            { id:1,name: "Kura", time: "22:00-23:00" },
-            { id:2,name: "Work", time: "18:00-22:00" },
-            { id:3,name: "Meeting", time: "14:00-15:30" },
-            { id:4,name: "Kura", time: "22:00-23:00" },
-            ];
+        const [y,m]=selectedDate.split("-");
+        const key=`${y}-${m}`;
+         const todayShifts = monthCache[key]?.[selectedDate] || {};
         const filteredHoliday = JapanseHolidays.filter(i => i.date === selectedDate);
         return(
         <Box sx={{
@@ -55,7 +53,9 @@ export default function WorkList(){
                         gap: 1.5
                     }}
                     >
-                    {schedules.map((item, index) => (
+                    {Object.keys(todayShifts).map((key, index) => {
+                        const item=todayShifts[key];
+                        return(
                         <ListItem
                         key={index}
                         sx={{
@@ -75,10 +75,10 @@ export default function WorkList(){
                         >
                         <Box>
                             <Typography sx={{ fontWeight: 600, fontSize: "16px" }}>
-                            {item.name}
+                            {key}
                             </Typography>
                             <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
-                            {item.time}
+                            {item.start}-{item.end}({getHourDifference(item.start,item.end)})
                             </Typography>
                         </Box>
 
@@ -94,10 +94,8 @@ export default function WorkList(){
             <DeleteIcon />
           </IconButton>
         </ListItem>
-      ))}
+      )})}
     </List>
-                
-                
             </Box>
             <IconButton onClick={()=>{
                 navigate("/home/worklist/addwork")}} sx={{

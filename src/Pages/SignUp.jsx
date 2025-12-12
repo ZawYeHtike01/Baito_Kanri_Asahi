@@ -1,4 +1,4 @@
-import { CircularProgress,Alert, Box, Button, TextField, Typography,InputAdornment,IconButton, major } from "@mui/material";
+import { CircularProgress,Alert, Box, Button, TextField, Typography,InputAdornment,IconButton, } from "@mui/material";
 import { useApp } from "../App";
 import { useNavigate,Link } from "react-router-dom";
 import logo from '../assets/logo.png';

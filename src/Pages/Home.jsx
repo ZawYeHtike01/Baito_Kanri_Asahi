@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { ArrowBack, ArrowForward, Flag } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
 import { FormartDate } from "./Data";
-
+import { db } from "../Firebase";
+import { auth } from "../Firebase";
+import { useEffect } from "react";
+import { collection,doc, query, where, documentId,getDoc,getDocs } from "firebase/firestore";
 export default function Home() {
   
-  const {setSelectedDate,JapanseHolidays,currentDate, setCurrentDate } = useApp();
+  const {monthCache,setMonthCache,setSelectedDate,JapanseHolidays,currentDate, setCurrentDate } = useApp();
   const navigate = useNavigate();
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -55,6 +58,34 @@ export default function Home() {
   
   };
 
+  const getItem=async()=>{
+    const user=auth.currentUser;
+    const key=`${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}`;
+    if (monthCache[key]) return monthCache[key];
+    const firstDate=`${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-01`;
+    const lastDay =new Date(currentDate.getFullYear(),currentDate.getMonth()+1,0).getDate();
+    const lastDate=`${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+    try{  
+    const workshiftsCol = collection(doc(db, "shifts", user.uid), "workshifts");
+    const q = query(workshiftsCol, where(documentId(), ">=", firstDate), where(documentId(), "<=", lastDate));
+    const snap = await getDocs(q);
+
+    const map = {};
+    snap.forEach(d => map[d.id] = d.data());
+
+    setMonthCache(prep=>{
+      return{
+        ...prep,
+        [key]:map
+      }
+    })
+    return map;
+
+    }catch(e){
+      console.log(e.message);
+    }
+  }
+
   const isToday = (date) => {
     if (!date) return false;
     const today = new Date();
@@ -75,6 +106,9 @@ export default function Home() {
   }
 
   const days = getDaysInMonth(currentDate);
+  useEffect(() => {
+    getItem();
+  }, [currentDate]);
 
   return (
     <Box
@@ -153,7 +187,7 @@ export default function Home() {
         }}
       >
         {days.map((date, index) => (
-          
+
           <Box
             key={index}
             onClick={() => {
@@ -179,26 +213,44 @@ export default function Home() {
             }}
           >
             {date && ( 
-              <Box sx={{ textAlign: "center",display:"flex",flexDirection:"column",alignItems:"center" }}>
-                <Box
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: isToday(date) ? "700" : "400",
-                    color: isToday(date) ? "white" : isHolidays(date)? "white": "#333",
-                    width: "28px",
-                    height: "28px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: isToday(date) ? "#1976d2" : isHolidays(date)? "red" : "transparent",
-                  }}
-                >
-                  {date.getDate()}
-                </Box>
+              (() => {
+                const dd = FormartDate(date);
+                const key = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}`;
+                const shift = monthCache[key]?.[dd];
 
-                <Typography sx={{ fontSize: "12px" }}>(18:00-22:00)</Typography>
-              </Box>
+                let time = "";
+                if (shift) {
+                  const firstKey = Object.keys(shift)[0];
+                  const s = shift[firstKey];
+                  time = `(${s.start}-${s.end})`;
+                }
+
+                return (
+                  <Box sx={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Box
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: isToday(date) ? "700" : "400",
+                        color: isToday(date) ? "white" : isHolidays(date)? "white": "#333",
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: isToday(date) ? "#1976d2" : isHolidays(date)? "red" : "transparent",
+                      }}
+                    >
+                      {date.getDate()}
+                    </Box>
+
+                    <Typography sx={{ fontSize: "12px" }}>
+                      {time}
+                    </Typography>
+                  </Box>
+                );
+              })()
+
             )}
           </Box>
         ))}

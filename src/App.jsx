@@ -74,6 +74,7 @@ function App() {
   const [JapanseHolidays,setJapaneseHolidays]=useState([]);
   const [userData,setUserData]=useState();
   const [workname,setWorkName]=useState([]);
+  const [monthCache,setMonthCache]=useState({});
   useEffect(() => {
        async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -85,7 +86,7 @@ function App() {
   useEffect(() => {
   async function fetchWorks() {
     const user = auth.currentUser;
-    if (!user) return; // wait for login
+    if (!user) return; 
   
     const worksRef = collection(db, "worksname", user.uid, "works");
     const snap = await getDocs(worksRef);
@@ -94,7 +95,6 @@ function App() {
       work: doc.id,
       ...doc.data()
     }));
-
     setWorkName(list);
   }
 
@@ -102,7 +102,7 @@ function App() {
 }, [isauth]); 
   
   return (
-    <AppContext.Provider value={{workname,setWorkName,userData,setUserData,currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,isauth, setisAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
+    <AppContext.Provider value={{monthCache,setMonthCache,workname,setWorkName,userData,setUserData,currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,isauth, setisAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
      
 		<RouterProvider router={router} />
 	  
