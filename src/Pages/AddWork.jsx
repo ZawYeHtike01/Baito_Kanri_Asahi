@@ -33,6 +33,90 @@ export default function AddWork() {
     rest:false,
   });
   const {selectedDate,setMonthCache,workname,setWorkName,setGlobalMsg}=useApp();
+  const workAdd=async()=>{
+    const user=auth.currentUser;
+                setLoading(true);
+                try{
+                const worksRef = doc(db, "worksname", user.uid, "works",workNameRef.current.value,);
+                await setDoc(worksRef, {
+                salary: Number(salaryRef.current.value),
+                });
+                setWorkName(prev => [
+                    ...prev,
+                    {
+                        work: workNameRef.current.value,
+                        salary: Number(salaryRef.current.value)
+                    }
+                    ]);
+                setGlobalMsg("Added Successfully");
+                setOpenModal(false);
+                setWork("");
+                }catch(e){
+                    console.log(e.message);
+                }finally{
+                    setLoading(false);
+                }
+  }
+  const addItem=async()=>{
+    setLoading(true);
+            const newError={
+                        work:!work,
+                        start:!startTime,
+                        end:!endTime,
+					}
+            setError(newError)
+            const hasErr=Object.values(newError).some(Boolean);
+            if(hasErr){
+                setLoading(false);
+                setGlobalMsg("Please Fill The Field");
+                return;
+            }
+            
+            try{
+
+                    const user=auth.currentUser;
+                    const workShiftRef = doc(db, "shifts", user.uid, "workshifts", selectedDate);
+                    const docSnap = await getDoc(workShiftRef);
+                    let shift = {};
+                    if (docSnap.exists()) {
+                    shift = docSnap.data();
+                    }
+                    let uniqueName = work;
+                    let count = 1;
+                    while (shift[uniqueName]) {
+                    uniqueName = `${work}_${count++}`;
+                    }
+                    
+                    const salary=workname.find(i=> i.work === work );
+                    if (!salary) throw new Error("Work not found");
+                    shift[uniqueName] = { start: startTime.format("HH:mm"),
+                end: endTime.format("HH:mm"),
+                rest: rest.minute(),salary:salary.salary};
+                    await setDoc(workShiftRef, shift, { merge: true });
+                    setMonthCache(prev => {
+                    const [y, m] = selectedDate.split("-");
+                    const key = `${y}-${m}`;
+                    return {
+                        ...prev,
+                        [key]: {
+                        ...(prev[key] || {}),
+                        [selectedDate]: shift
+                        }
+                    };
+                    });
+                setStartTime(dayjs());
+                setEndTime(dayjs());
+                setRest(dayjs().hour(0).minute(0));
+                setWork("");
+                
+                setGlobalMsg("Added Item Successfully");
+            }catch(e){
+                console.log(e.message);
+            }finally{
+                setLoading(false);
+            }
+            
+  }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box
@@ -116,64 +200,7 @@ export default function AddWork() {
           />
 
           <Button onClick={async()=>{
-            setLoading(true);
-            const newError={
-                        work:!work,
-                        start:!startTime,
-                        end:!endTime,
-					}
-            setError(newError)
-            const hasErr=Object.values(newError).some(Boolean);
-            if(hasErr){
-                setLoading(false);
-                setGlobalMsg("Please Fill The Field");
-                return;
-            }
-            
-            try{
-
-                    const user=auth.currentUser;
-                    const workShiftRef = doc(db, "shifts", user.uid, "workshifts", selectedDate);
-                    const docSnap = await getDoc(workShiftRef);
-                    let shift = {};
-                    if (docSnap.exists()) {
-                    shift = docSnap.data();
-                    }
-                    let uniqueName = work;
-                    let count = 1;
-                    while (shift[uniqueName]) {
-                    uniqueName = `${work}_${count++}`;
-                    }
-                    
-                    const salary=workname.find(i=> i.work === work );
-                    if (!salary) throw new Error("Work not found");
-                    shift[uniqueName] = { start: startTime.format("HH:mm"),
-                end: endTime.format("HH:mm"),
-                rest: rest.minute(),salary:salary.salary};
-                    await setDoc(workShiftRef, shift, { merge: true });
-                    setMonthCache(prev => {
-                    const [y, m] = selectedDate.split("-");
-                    const key = `${y}-${m}`;
-                    return {
-                        ...prev,
-                        [key]: {
-                        ...(prev[key] || {}),
-                        [selectedDate]: shift
-                        }
-                    };
-                    });
-                setStartTime(dayjs());
-                setEndTime(dayjs());
-                setRest(dayjs().hour(0).minute(0));
-                setWork("");
-                
-                setGlobalMsg("Added Item Successfully");
-            }catch(e){
-                console.log(e.message);
-            }finally{
-                setLoading(false);
-            }
-            
+              await addItem();
           }} variant="contained" fullWidth>
             Add Work
           </Button>
@@ -213,29 +240,7 @@ export default function AddWork() {
             <TextField inputRef={workNameRef} sx={{mt:3}} id="outlined-basic" label="Name" variant="outlined" fullWidth/>
             <TextField inputRef={salaryRef} type="number" sx={{mt:3}} id="outlined-basic" label="Salary" variant="outlined" fullWidth/>
             <Button onClick={async()=>{
-                const user=auth.currentUser;
-                setLoading(true);
-                try{
-                const worksRef = doc(db, "worksname", user.uid, "works",workNameRef.current.value,);
-                await setDoc(worksRef, {
-                salary: Number(salaryRef.current.value),
-                });
-                setWorkName(prev => [
-                    ...prev,
-                    {
-                        work: workNameRef.current.value,
-                        salary: Number(salaryRef.current.value)
-                    }
-                    ]);
-                setGlobalMsg("Added Successfully");
-                setOpenModal(false);
-                setWork("");
-                }catch(e){
-                    console.log(e.message);
-                }finally{
-                    setLoading(false);
-                }
-                
+                await workAdd();
             }} sx={{mt:3}} type="submit" variant="contained"fullWidth>Add</Button>
           </Box>
         </Modal>

@@ -18,6 +18,7 @@ export default function Home() {
     "January","February","March","April","May","June",
     "July","August","September","October","November","December"
   ];
+  const [sal,setSal]=useState();
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -65,17 +66,20 @@ export default function Home() {
       const monthData = monthCache[key];
       if (!monthData) {
         setTotal(0);
+        setSal(0)
         return;
       }
 
       let sum = 0;
-
+      let ss=0;
       Object.values(monthData).forEach(dayShift => {
         Object.values(dayShift).forEach(s => {
-          sum += getHourDifference(s.start, s.end, s.rest);
+          const hours = getHourDifference(s.start, s.end, s.rest);
+          sum += hours;
+          ss += hours * s.salary;
         });
       });
-
+      setSal(Number(ss.toFixed(0)));
       setTotal(Number(sum.toFixed(1)));
   }, [monthCache, currentDate]);
   const getItem=async()=>{
@@ -166,6 +170,9 @@ export default function Home() {
         </Typography>
         <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
           This Month Total Hours : {total} hours
+        </Typography>
+        <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
+          Estimate Salary : {sal} ￥
         </Typography>
         </Box>
         <IconButton onClick={handleNextMonth}>
