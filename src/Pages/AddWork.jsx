@@ -201,6 +201,7 @@ export default function AddWork() {
 
           <Button onClick={async()=>{
               await addItem();
+              navigate("/home");
           }} variant="contained" fullWidth>
             Add Work
           </Button>
