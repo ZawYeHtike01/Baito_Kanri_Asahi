@@ -343,6 +343,7 @@ export default function WorkList(){
                                     try{
                                         await updateItem();
                                         setUpdateModel(false);
+                                        setGlobalMsg("Upadated Successfully");
                                     }catch(e){
                                         console.log(e.message);
                                     }finally{
