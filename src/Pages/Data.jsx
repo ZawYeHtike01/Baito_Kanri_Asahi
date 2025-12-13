@@ -16,14 +16,14 @@ export function FormartDate(date){
     return `${y}-${m}-${d}`;
 }
 
-export function getHourDifference(start,end){
+export function getHourDifference(start,end,rest){
 const [sH, sM] = start.split(":").map(Number);
   const [eH, eM] = end.split(":").map(Number);
   const startTime = sH * 60 + sM;
-  const endTime = eH * 60 + eM;
-
-  let dif = endTime - startTime;
+  const endTime = eH * 60 + eM;  
+  let dif = (endTime - startTime);
   if (dif < 0) dif += 24 * 60;
+  dif-=rest;
   const hours= dif / 60;
   return Number(hours.toFixed(1));
 }

@@ -154,7 +154,6 @@ export default function AddWork() {
                     setMonthCache(prev => {
                     const [y, m] = selectedDate.split("-");
                     const key = `${y}-${m}`;
-
                     return {
                         ...prev,
                         [key]: {

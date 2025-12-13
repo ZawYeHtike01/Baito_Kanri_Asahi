@@ -75,6 +75,7 @@ function App() {
   const [userData,setUserData]=useState();
   const [workname,setWorkName]=useState([]);
   const [monthCache,setMonthCache]=useState({});
+  const [total,setTotal]=useState();
   useEffect(() => {
        async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -102,7 +103,7 @@ function App() {
 }, [isauth]); 
   
   return (
-    <AppContext.Provider value={{monthCache,setMonthCache,workname,setWorkName,userData,setUserData,currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,isauth, setisAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
+    <AppContext.Provider value={{total,setTotal,monthCache,setMonthCache,workname,setWorkName,userData,setUserData,currentDate, setCurrentDate,JapanseHolidays,setJapaneseHolidays,isauth, setisAuth,showDrawer,setShowDrawer,globalMsg, setGlobalMsg,selectedDate, setSelectedDate}}>
      
 		<RouterProvider router={router} />
 	  
