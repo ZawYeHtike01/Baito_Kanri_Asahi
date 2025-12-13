@@ -1,4 +1,4 @@
-import { Box,Typography,IconButton,Button,CircularProgress} from "@mui/material"
+import { Box,Typography,IconButton,Button,CircularProgress,TextField} from "@mui/material"
 import { useApp } from "../App"
 import { ArrowBack } from "@mui/icons-material"
 import AddIcon from "@mui/icons-material/Add";
@@ -10,6 +10,11 @@ import { db,auth } from "../Firebase";
 import { getHourDifference } from "./Data";
 import Modal from "@mui/material/Modal";
 import { useState } from "react";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
+
 
 export default function WorkList(){
         const {selectedDate,JapanseHolidays,monthCache,setMonthCache,setGlobalMsg}=useApp()
@@ -19,16 +24,50 @@ export default function WorkList(){
         const [loading,setLoading]=useState();
         const todayShifts = monthCache[key]?.[selectedDate] || {};
         const [model,setModel]=useState(false);
+        const [work, setWork] = useState("");
+        const [startTime, setStartTime] = useState(dayjs());
+        const [endTime, setEndTime] = useState(dayjs());
+        const [rest, setRest] = useState(dayjs().hour(0).minute(0));
+        const [updateModel,setUpdateModel]=useState(false);
+        const [salary,setSalary]=useState();
+        const user=auth.currentUser;
         const filteredHoliday = JapanseHolidays.filter(i => i.date === selectedDate);
         const [modelMessage,setModelMessage]=useState({
             date:"",
             name:"",
         });
+
+        const updateItem=async()=>{
+            const [y,m]=selectedDate.split("-");
+            const key=`${y}-${m}`;
+            const q = doc(db, "shifts", user.uid, "workshifts", selectedDate);
+            await updateDoc(q,{
+                [work]:{start:startTime.format("HH:mm"),end:endTime.format("HH:mm"),rest:rest.minute(),salary:salary}
+            })
+            setMonthCache(prev => {
+            return {
+                ...prev,
+                [key]: {
+                ...(prev[key] || {}),
+                [selectedDate]: {
+                    ...(prev[key]?.[selectedDate] || {}),
+                    [work]: {
+                    ...(prev[key]?.[selectedDate]?.[work] || {}),
+                        start: startTime.format("HH:mm"),
+                        end: endTime.format("HH:mm"),
+                        rest: rest.minute(),
+                        salary:salary
+                    }
+                }
+                }
+            };
+            });
+        }
+       
         const deleteItem=async(date,name)=>{
             console.log(date,name);
             const [y,m]=date.split("-");
             const key=`${y}-${m}`;
-            const user=auth.currentUser;
             const ref=doc(db,"shifts", user.uid, "workshifts", date)
             await updateDoc(ref,{
                 [name]:deleteField()
@@ -123,7 +162,13 @@ export default function WorkList(){
                             }
                         }}
                         >
-                        <Box>
+                        <Box sx={{flexGrow:1}} onClick={()=>{
+                            setWork(key);
+                            setStartTime(dayjs(item.start, "HH:mm"));
+                            setEndTime(dayjs(item.end, "HH:mm"));
+                            setRest(dayjs().hour(0).minute(item.rest || 0));
+                            setSalary(Number(item.salary));
+                            setUpdateModel(true)}}>
                             <Typography sx={{ fontWeight: 600, fontSize: "16px" }}>
                             {key}
                             </Typography>
@@ -131,7 +176,6 @@ export default function WorkList(){
                             {item.start}-{item.end}({getHourDifference(item.start,item.end,item.rest)})
                             </Typography>
                         </Box>
-
                         <IconButton onClick={()=>{setModel(true)
                             const message={
                                 date:selectedDate,
@@ -219,7 +263,98 @@ export default function WorkList(){
                             </Button>
                             </Box>
                         </Box>
-                </Modal>
+                    </Modal>
+                    <Modal
+                        open={updateModel}
+                        onClose={() => {setUpdateModel(false)}}
+                        >
+                        <Box
+                            sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            boxShadow: 24,
+                            p: 3,
+                            width: 300,
+                            }}
+                        >
+                            <Box sx={{
+                                display:"flex",
+                                flexDirection:"column",
+                                gap:2
+                            }}>
+                                <TextField
+                                value={work}
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                    disableUnderline: true,
+                                }}
+                                sx={{
+                                    "& .MuiInputBase-input": {
+                                    cursor: "default",
+                                    },
+                                }}
+                                />
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <TimePicker 
+                                        label="Start Time"
+                                        value={startTime}
+                                        onChange={(newValue) => setStartTime(newValue)}
+                                    />
+
+                                    <TimePicker 
+                                        label="End Time"
+                                        value={endTime}
+                                        onChange={(newValue) => setEndTime(newValue)}
+                                    />
+
+                                    <TimePicker 
+                                        label="Rest (minutes)"
+                                        views={["minutes"]}
+                                        value={rest}
+                                        onChange={(newValue) => setRest(newValue)}
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                            
+                            <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                mt: 3,
+                                gap: 1,
+                            }}
+                            >
+                            <Button
+                                onClick={() => setUpdateModel(false)}
+                                variant="outlined"
+                            >
+                                Close
+                            </Button>
+                            <Button
+                                color="success"
+                                variant="contained"
+                                onClick={async()=>{
+                                    setLoading(true)
+                                    try{
+                                        await updateItem();
+                                        setUpdateModel(false);
+                                    }catch(e){
+                                        console.log(e.message);
+                                    }finally{
+                                        setLoading(false);
+                                    }
+                                }}
+                            >
+                                Update
+                            </Button>
+                            </Box>
+                        </Box>
+                    </Modal>
         </Box>
         )
 }
