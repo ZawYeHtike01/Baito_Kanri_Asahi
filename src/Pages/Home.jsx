@@ -8,11 +8,11 @@ import { db } from "../Firebase";
 import { auth } from "../Firebase";
 import { useEffect } from "react";
 import { collection,doc, query, where, documentId,getDoc,getDocs } from "firebase/firestore";
+import { getHourDifference } from "./Data";
 export default function Home() {
   
-  const {monthCache,setMonthCache,setSelectedDate,JapanseHolidays,currentDate, setCurrentDate } = useApp();
+  const {monthCache,setMonthCache,setSelectedDate,JapanseHolidays,currentDate, setCurrentDate,total,setTotal } = useApp();
   const navigate = useNavigate();
-
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const monthNames = [
     "January","February","March","April","May","June",
@@ -57,7 +57,27 @@ export default function Home() {
   setCurrentDate(newDate);
   
   };
+  useEffect(() => {
+      const key = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}`;
 
+      const monthData = monthCache[key];
+      if (!monthData) {
+        setTotal(0);
+        return;
+      }
+
+      let sum = 0;
+
+      Object.values(monthData).forEach(dayShift => {
+        Object.values(dayShift).forEach(s => {
+          sum += getHourDifference(s.start, s.end, s.rest);
+        });
+      });
+
+      setTotal(Number(sum.toFixed(1)));
+  }, [monthCache, currentDate]);
   const getItem=async()=>{
     const user=auth.currentUser;
     const key=`${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}`;
@@ -69,7 +89,6 @@ export default function Home() {
     const workshiftsCol = collection(doc(db, "shifts", user.uid), "workshifts");
     const q = query(workshiftsCol, where(documentId(), ">=", firstDate), where(documentId(), "<=", lastDate));
     const snap = await getDocs(q);
-
     const map = {};
     snap.forEach(d => map[d.id] = d.data());
 
@@ -141,11 +160,14 @@ export default function Home() {
         <IconButton onClick={handlePrevMonth}>
           <ArrowBack />
         </IconButton>
-
-        <Typography sx={{ fontSize: "18px", fontWeight: "600" }}>
+        <Box textAlign={"center"}>
+          <Typography sx={{ fontSize: "18px", fontWeight: "600" }}>
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </Typography>
-
+        <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
+          This Month Total Hours : {total} hours
+        </Typography>
+        </Box>
         <IconButton onClick={handleNextMonth}>
           <ArrowForward />
         </IconButton>
@@ -219,7 +241,7 @@ export default function Home() {
                 const shift = monthCache[key]?.[dd];
 
                 let time = "";
-                if (shift) {
+                if (shift && Object.keys(shift).length > 0) {
                   const firstKey = Object.keys(shift)[0];
                   const s = shift[firstKey];
                   time = `(${s.start}-${s.end})`;
@@ -255,6 +277,7 @@ export default function Home() {
           </Box>
         ))}
       </Box>
+      
     </Box>
   );
 }
