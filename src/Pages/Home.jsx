@@ -69,7 +69,6 @@ export default function Home() {
         setSal(0)
         return;
       }
-
       let sum = 0;
       let ss=0;
       Object.values(monthData).forEach(dayShift => {
