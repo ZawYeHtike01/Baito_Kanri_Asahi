@@ -1,17 +1,18 @@
 import { Box, Container, Snackbar } from "@mui/material";
-
 import { Outlet } from "react-router-dom";
-
 import { useApp } from "./App";
 import Header from "./Components/Header";
 import AppDrawer from "./Components/AppDrawer";
+import { useLocation } from "react-router-dom";
 
 export default function Template(){
 	const {isauth}=useApp();
 	const { globalMsg, setGlobalMsg } = useApp();
+	const location=useLocation();
+	const isRight= !(location.pathname==="/" || location.pathname==="/signup") && isauth;
     return(
         <Box sx={{height:"100vh",display:"flex",flexDirection:"column" }}>
-					{isauth && (
+					{isRight && (
 						<Box>
 							<Header/>
 							<AppDrawer/>

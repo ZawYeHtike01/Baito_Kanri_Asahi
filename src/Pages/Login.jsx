@@ -9,7 +9,7 @@ import { db } from "../Firebase";
 import { getDoc,doc } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../Firebase";
-
+import { useLocation } from "react-router-dom";
 
 export default function Login(){
     const {setisAuth,setUserData}=useApp();
@@ -18,6 +18,7 @@ export default function Login(){
 	const{setGlobalMsg}=useApp();
 	const emailRef=useRef();
 	const passwordRef=useRef();
+	const location=useLocation();
 	const [loading, setLoading] = useState(false);
 	const [errors,setErrors]=useState({
 		email:false,

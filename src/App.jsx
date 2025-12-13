@@ -12,9 +12,11 @@ import GetJapaneseHolidays from './Pages/Data';
 import { useEffect } from 'react';
 import AddWork from './Pages/AddWork';
 import SignUp from './Pages/SignUp';
-import { getDocs,collection } from 'firebase/firestore';
+import { getDocs,collection, } from 'firebase/firestore';
 import { db } from './Firebase';
 import { auth } from './Firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+
 const AppContext=createContext();
 
 
@@ -66,6 +68,7 @@ export function useApp(){
 }
 
 function App() {
+   
   const [isauth, setisAuth] = useState(false);
   const [showDrawer,setShowDrawer]=useState(false);
   const [globalMsg, setGlobalMsg ]=useState(null);
