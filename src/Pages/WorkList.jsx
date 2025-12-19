@@ -17,7 +17,6 @@ import { db, auth } from "../Firebase";
 import { useApp } from "../App";
 import { getHourDifference } from "./Data";
 import Modal from "@mui/material/Modal";
-
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -28,8 +27,13 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
 export default function WorkList() {
-  const { selectedDate, JapanseHolidays, monthCache, setMonthCache, setGlobalMsg } =
-    useApp();
+  const {
+    selectedDate,
+    JapanseHolidays,
+    monthCache,
+    setMonthCache,
+    setGlobalMsg,
+  } = useApp();
   const navigate = useNavigate();
   const user = auth.currentUser;
 
@@ -56,7 +60,6 @@ export default function WorkList() {
     name: "",
   });
 
-  
   const updateItem = async () => {
     const ref = doc(db, "shifts", user.uid, "workshifts", selectedDate);
 
@@ -86,7 +89,6 @@ export default function WorkList() {
     }));
   };
 
-  
   const deleteItem = async (date, name) => {
     const [yy, mm] = date.split("-");
     const key = `${yy}-${mm}`;
@@ -147,7 +149,9 @@ export default function WorkList() {
       </Typography>
 
       <Box sx={{ width: "90%", overflow: "auto" }}>
-        <List sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1.5 }}>
+        <List
+          sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1.5 }}
+        >
           {Object.keys(todayShifts).map((key) => {
             const item = todayShifts[key];
             return (
@@ -168,14 +172,14 @@ export default function WorkList() {
                   onClick={() => {
                     setWork(key);
                     setStartTime(
-                      item.start
-                        ? dayjs(item.start, "HH:mm")
-                        : dayjs()
+                      item.start ? dayjs(item.start, "HH:mm") : dayjs()
                     );
-                    setEndTime(
-                      item.end ? dayjs(item.end, "HH:mm") : dayjs()
+                    setEndTime(item.end ? dayjs(item.end, "HH:mm") : dayjs());
+                    setRest(
+                      dayjs()
+                        .hour(0)
+                        .minute(item.rest || 0)
                     );
-                    setRest(dayjs().hour(0).minute(item.rest || 0));
                     setSalary(Number(item.salary || 0));
                     setUpdateModal(true);
                   }}
@@ -183,12 +187,7 @@ export default function WorkList() {
                   <Typography fontWeight={600}>{key}</Typography>
                   <Typography fontSize={13}>
                     {item.start}-{item.end} (
-                    {getHourDifference(
-                      item.start,
-                      item.end,
-                      item.rest
-                    )}
-                    )
+                    {getHourDifference(item.start, item.end, item.rest)})
                   </Typography>
                 </Box>
 
@@ -221,7 +220,6 @@ export default function WorkList() {
         <AddIcon />
       </IconButton>
 
-      
       <Modal open={updateModal} onClose={() => setUpdateModal(false)}>
         <Box
           sx={{
@@ -235,33 +233,34 @@ export default function WorkList() {
             width: 300,
           }}
         >
-            <Box sx={{
-                display:"flex",
-                flexDirection:"column",
-                gap:3
-            }}>
-                    <TextField value={work} InputProps={{ readOnly: true }} />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+            }}
+          >
+            <TextField value={work} InputProps={{ readOnly: true }} />
 
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <TimePicker
-                    label="Start Time"
-                    value={startTime}
-                    onChange={(v) => setStartTime(v)}
-                    />
-                    <TimePicker
-                    label="End Time"
-                    value={endTime}
-                    onChange={(v) => setEndTime(v)}
-                    />
-                    <TimePicker
-                    label="Rest (minutes)"
-                    views={["minutes"]}
-                    value={rest}
-                    onChange={(v) => setRest(v)}
-                    />
-                </LocalizationProvider>
-            </Box>
-          
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <TimePicker
+                label="Start Time"
+                value={startTime}
+                onChange={(v) => setStartTime(v)}
+              />
+              <TimePicker
+                label="End Time"
+                value={endTime}
+                onChange={(v) => setEndTime(v)}
+              />
+              <TimePicker
+                label="Rest (minutes)"
+                views={["minutes"]}
+                value={rest}
+                onChange={(v) => setRest(v)}
+              />
+            </LocalizationProvider>
+          </Box>
 
           <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
             <Button onClick={() => setUpdateModal(false)}>Close</Button>
@@ -285,7 +284,6 @@ export default function WorkList() {
         </Box>
       </Modal>
 
-      
       <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
         <Box
           sx={{
@@ -299,9 +297,7 @@ export default function WorkList() {
             width: 300,
           }}
         >
-          <Typography>
-            Are you sure to delete {deleteInfo.name}?
-          </Typography>
+          <Typography>Are you sure to delete {deleteInfo.name}?</Typography>
           <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
             <Button onClick={() => setDeleteModal(false)}>Close</Button>
             <Button
