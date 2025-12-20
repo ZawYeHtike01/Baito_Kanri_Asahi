@@ -106,7 +106,6 @@ export default function WorkList() {
 
       if (Object.keys(newDay).length === 0) delete newMonth[date];
       else newMonth[date] = newDay;
-
       return { ...prev, [key]: newMonth };
     });
   };
