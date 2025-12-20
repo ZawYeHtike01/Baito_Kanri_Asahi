@@ -11,21 +11,13 @@ import { useApp } from "../App";
 import logo from "../assets/logo.png";
 
 export default function Header() {
-  const { setShowDrawer,setOpenWeek } = useApp();
+  const { setShowDrawer } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
   return (
     <AppBar>
       <Toolbar>
-        {location.pathname === "/home" ? (
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={() => setShowDrawer(true)}
-          >
-            <MenuIcon />
-          </IconButton>
-        ) : (
+        {(location.pathname === "/home/worklist" || location.pathname === "/home/worklist/addwork") ? (
           <IconButton
             onClick={() => {
               if (location.pathname === "/home/worklist/addwork") {
@@ -35,15 +27,18 @@ export default function Header() {
           >
             <BackIcon></BackIcon>
           </IconButton>
+        ) : (
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={() => setShowDrawer(true)}
+          >
+            <MenuIcon />
+          </IconButton>
         )}
 
         <Box component="img" src={logo} alt="Logo" sx={{ width: 50 }} />
         <Typography sx={{ flexGrow: 1, ml: 2 }}>Baito_Kanri_Asahi</Typography>
-        {location.pathname === "/home" && (
-          <IconButton onClick={()=>setOpenWeek(true)}>
-            <AddIcon />
-          </IconButton>
-        )}
       </Toolbar>
     </AppBar>
   );

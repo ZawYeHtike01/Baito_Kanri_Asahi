@@ -15,6 +15,7 @@ import SignUp from "./Pages/SignUp";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "./Firebase";
 import { auth } from "./Firebase";
+import Profile from "./Pages/Profile";
 
 const AppContext = createContext();
 
@@ -55,6 +56,14 @@ const routes = [
         path: "/signup",
         element: <SignUp />,
       },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ];
@@ -75,7 +84,6 @@ function App() {
   const [workname, setWorkName] = useState([]);
   const [monthCache, setMonthCache] = useState({});
   const [total, setTotal] = useState();
-  const [openWeek, setOpenWeek] = useState(false);
   const [checkHour, setCheckHour] = useState({});
   useEffect(() => {
     async function fetchHolidays() {
@@ -108,8 +116,6 @@ function App() {
       value={{
         checkHour,
         setCheckHour,
-        openWeek,
-        setOpenWeek,
         total,
         setTotal,
         monthCache,
