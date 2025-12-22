@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children }) {
 	const { isauth } = useApp();
     
 	if (!isauth) {
-		return <Navigate to="/" replace />;
+		return <Navigate to="/login" replace />;
 	}
 
 	return children;

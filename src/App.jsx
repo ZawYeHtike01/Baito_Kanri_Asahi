@@ -16,6 +16,7 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "./Firebase";
 import { auth } from "./Firebase";
 import Profile from "./Pages/Profile";
+import LandingPage from "./Pages/LandingPage";
 
 const AppContext = createContext();
 
@@ -26,6 +27,10 @@ const routes = [
     children: [
       {
         path: "/",
+        element: <LandingPage/>,
+      },
+      {
+        path: "/login",
         element: <Login />,
       },
       {
