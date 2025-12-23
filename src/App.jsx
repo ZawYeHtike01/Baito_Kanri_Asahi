@@ -27,7 +27,7 @@ const routes = [
     children: [
       {
         path: "/",
-        element: <LandingPage/>,
+        element: <LandingPage />,
       },
       {
         path: "/login",
@@ -90,6 +90,7 @@ function App() {
   const [monthCache, setMonthCache] = useState({});
   const [total, setTotal] = useState();
   const [checkHour, setCheckHour] = useState({});
+  const [course, setCourse] = useState({});
   useEffect(() => {
     async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -116,9 +117,15 @@ function App() {
     fetchWorks();
   }, [isauth]);
 
+  
+  useEffect(() => {
+    console.log("course updated:", course);
+  }, [course]);
   return (
     <AppContext.Provider
       value={{
+        course,
+        setCourse,
         checkHour,
         setCheckHour,
         total,
