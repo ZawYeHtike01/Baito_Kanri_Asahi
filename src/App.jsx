@@ -17,6 +17,7 @@ import { db } from "./Firebase";
 import { auth } from "./Firebase";
 import Profile from "./Pages/Profile";
 import LandingPage from "./Pages/LandingPage";
+import CheckWeek from "./Pages/CheckWeek";
 
 const AppContext = createContext();
 
@@ -68,6 +69,15 @@ const routes = [
             <Profile />
           </ProtectedRoute>
         ),
+      },
+      {
+        path:"/checkweek",
+        element:(
+          <ProtectedRoute>
+            <CheckWeek/>
+          </ProtectedRoute>
+        )
+
       },
     ],
   },

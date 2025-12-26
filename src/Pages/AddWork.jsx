@@ -123,8 +123,8 @@ export default function AddWork() {
       setEndTime(dayjs());
       setRest(dayjs().hour(0).minute(0));
       setWork("");
-
       setGlobalMsg("Added Item Successfully");
+      navigate("/home");
     } catch (e) {
       console.log(e.message);
     } finally {
@@ -221,7 +221,6 @@ export default function AddWork() {
           <Button
             onClick={async () => {
               await addItem();
-              navigate("/home");
             }}
             variant="contained"
             fullWidth
@@ -278,7 +277,7 @@ export default function AddWork() {
               type="number"
               sx={{ mt: 3 }}
               id="outlined-basic"
-              label="Salary"
+              label="Salary Per Hour"
               variant="outlined"
               fullWidth
             />

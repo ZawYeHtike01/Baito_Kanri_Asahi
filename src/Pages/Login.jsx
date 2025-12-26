@@ -62,7 +62,6 @@ export default function Login() {
         boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
       }}
     >
-      {/* 🔽 Loading overlay */}
       {loading && (
         <Box
           sx={{
@@ -81,7 +80,6 @@ export default function Login() {
         </Box>
       )}
 
-      {/* Logo */}
       <Box
         component="img"
         src={logo}
