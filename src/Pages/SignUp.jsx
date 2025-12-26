@@ -121,9 +121,12 @@ export default function SignUp() {
     <Box
       sx={{
         minHeight: "100vh",
+         width: { xs: "95%", sm: "50%", md: "27%" },
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        background:
+          "linear-gradient(135deg, rgba(99,102,241,.2), rgba(236,72,153,.2))",
           marginTop: { xs: "55px", sm: "55px", md: "70px" },
       }}
     >
@@ -154,6 +157,7 @@ export default function SignUp() {
           boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
         }}
       >
+      
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <Box component="img" src={logo} sx={{ width: 90, mb: 1 }} />
           <Typography variant="h4" fontWeight={700}>
@@ -163,6 +167,8 @@ export default function SignUp() {
             All fields are required
           </Typography>
         </Box>
+
+     
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
           <TextField
             label="Name"
@@ -295,7 +301,6 @@ export default function SignUp() {
           </Button>
         </Box>
 
-       
         <Typography
           variant="body2"
           sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}

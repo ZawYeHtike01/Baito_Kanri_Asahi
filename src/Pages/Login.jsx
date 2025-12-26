@@ -95,6 +95,7 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+         width: { xs: "95%", sm: "50%", md: "27%" },
        
       }}
     >
@@ -125,7 +126,6 @@ export default function Login() {
           boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
         }}
       >
-        {/* Header */}
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <Box component="img" src={logo} sx={{ width: 90, mb: 1 }} />
           <Typography variant="h4" fontWeight={700}>
@@ -135,8 +135,6 @@ export default function Login() {
             Sign in to continue
           </Typography>
         </Box>
-
-        {/* Form */}
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
           <TextField
             label="Email"
@@ -179,8 +177,6 @@ export default function Login() {
             Login
           </Button>
         </Box>
-
-        {/* Footer */}
         <Typography
           variant="body2"
           sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
