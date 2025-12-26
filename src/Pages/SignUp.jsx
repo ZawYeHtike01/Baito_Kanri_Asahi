@@ -1,47 +1,43 @@
 import {
-  CircularProgress,
-  Alert,
   Box,
   Button,
+  CircularProgress,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   Typography,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
-import { useApp } from "../App";
-import { useNavigate, Link } from "react-router-dom";
-import logo from "../assets/logo.png";
-import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useRef } from "react";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { db, auth } from "../Firebase";
-import { setDoc, doc } from "firebase/firestore";
-import { getDocs, collection } from "firebase/firestore";
-import { useEffect } from "react";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { auth, db } from "../Firebase";
+import { useApp } from "../App";
+import logo from "../assets/logo.png";
 
 export default function SignUp() {
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { setGlobalMsg, course, setCourse } = useApp();
-  const emailRef = useRef();
-  const passwordRef = useRef();
-  const confirmpasswordRef = useRef();
+
   const nameRef = useRef();
   const katakanaRef = useRef();
   const stunoRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+
+  const [showPassword, setShowPassword] = useState(false);
   const [schoolyear, setSchoolyear] = useState("");
   const [major, setMajor] = useState("");
   const [loading, setLoading] = useState(false);
+
   const studentNoRegex = /^[A-Z]\d{5}$/;
+
   const [errors, setErrors] = useState({
     name: false,
     katakana: false,
@@ -52,159 +48,150 @@ export default function SignUp() {
     confirmPassword: false,
     schoolyear: false,
   });
+
   useEffect(() => {
-    async function getCourse() {
+    async function fetchCourse() {
       const ref = collection(db, "course");
       const snap = await getDocs(ref);
       const data = {};
       snap.forEach((d) => (data[d.id] = d.data()));
       setCourse(data);
     }
-    getCourse();
-  }, []);
+    fetchCourse();
+  }, [setCourse]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const newErrors = {
+      name: !nameRef.current.value,
+      katakana: !/^[ァ-ンヴー・ー\s]+$/.test(katakanaRef.current.value),
+      stuno:
+        !stunoRef.current.value ||
+        !studentNoRegex.test(stunoRef.current.value),
+      email: !emailRef.current.value,
+      password: !passwordRef.current.value,
+      confirmPassword:
+        passwordRef.current.value !== confirmPasswordRef.current.value ||
+        !confirmPasswordRef.current.value,
+      schoolyear: !schoolyear,
+      major: !major,
+    };
+
+    setErrors(newErrors);
+    if (Object.values(newErrors).some(Boolean)) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const userData = await createUserWithEmailAndPassword(
+        auth,
+        emailRef.current.value,
+        passwordRef.current.value
+      );
+
+      await setDoc(
+        doc(db, "users", userData.user.uid),
+        {
+          userName: nameRef.current.value,
+          userNameKatakana: katakanaRef.current.value,
+          email: emailRef.current.value,
+          studentNo: stunoRef.current.value,
+          schoolYear: schoolyear,
+          major,
+        },
+        { merge: true }
+      );
+
+      setGlobalMsg("Sign Up Successfully");
+      navigate("/");
+    } catch (err) {
+      if (err.code === "auth/email-already-in-use") {
+        setErrors((prev) => ({ ...prev, email: true }));
+        setGlobalMsg("This email is already in use");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box
       sx={{
-        width: { xs: "85%", sm: "50%", md: "27%" },
+        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 5,
-        margin: "auto",
-        paddingBottom: 5,
-        background: "rgba(255, 255, 255, 0.2)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+          marginTop: { xs: "55px", sm: "55px", md: "70px" },
       }}
     >
       {loading && (
         <Box
           sx={{
             position: "fixed",
-            width: "100%",
-            height: "100%",
-            background: "rgba(255, 255, 255, 0.4)",
-            backdropFilter: "blur(6px)",
+            inset: 0,
+            background: "rgba(255,255,255,0.6)",
+            backdropFilter: "blur(8px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            zIndex: 2000,
+            zIndex: 3000,
           }}
         >
-          <CircularProgress size={70} />
+          <CircularProgress size={64} />
         </Box>
       )}
-      <Box component="img" src={logo} alt="Logo" sx={{ width: 120, mb: 2 }} />
-      <Typography variant="h3">Sign Up</Typography>
-      <Alert severity="warning" sx={{ mt: 2 }}>
-        All fields required
-      </Alert>
-      <form
-        style={{ width: "75%" }}
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setLoading(true);
-          const newErrors = {
-            name: !nameRef.current.value,
-            katakana: !/^[ァ-ンヴー・ー\s]+$/.test(katakanaRef.current.value),
-            email: !emailRef.current.value,
-            major: !major,
-            password: !passwordRef.current.value,
-            stuno: !stunoRef.current.value || !studentNoRegex.test(stunoRef.current.value),
-            schoolyear: !schoolyear,
-            confirmPassword:
-              passwordRef.current.value !== confirmpasswordRef.current.value ||
-              !confirmpasswordRef.current.value,
-          };
-          setErrors(newErrors);
-          const hasError = Object.values(newErrors).some(Boolean);
-          if (hasError) {
-            setLoading(false);
-            return;
-          }
-          try {
-            const userData = await createUserWithEmailAndPassword(
-              auth,
-              emailRef.current.value,
-              passwordRef.current.value
-            );
-            const user = userData.user;
-            const userRef = doc(db, "users", user.uid);
-            await setDoc(
-              userRef,
-              {
-                userName: nameRef.current.value,
-                userNameKatakana: katakanaRef.current.value,
-                email: emailRef.current.value,
-                major: major,
-                studentNo: stunoRef.current.value,
-                schoolYear: schoolyear,
-              },
-              { merge: true }
-            );
-            setGlobalMsg("Sign Up Successfully");
-            navigate("/");
-          } catch (f) {
-            if (f.code === "auth/email-already-in-use") {
-              setErrors((prev) => ({ ...prev, email: true }));
-              const hasError = Object.values(errors).some(Boolean);
-              if (hasError) {
-                setGlobalMsg("This Email is already used");
-                return;
-              }
-              return;
-            }
-            console.log(f.message);
-          } finally {
-            setLoading(false);
-          }
+
+      <Box
+        sx={{
+          width: { xs: "90%", sm: 420 },
+          p: 4,
+          borderRadius: 4,
+          background: "rgba(255,255,255,0.75)",
+          backdropFilter: "blur(14px)",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            mt: 2,
-            width: "100%",
-          }}
-        >
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          <Box component="img" src={logo} sx={{ width: 90, mb: 1 }} />
+          <Typography variant="h4" fontWeight={700}>
+            Create Account
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            All fields are required
+          </Typography>
+        </Box>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
           <TextField
-            id="outlined-basic"
-            inputRef={nameRef}
             label="Name"
-            variant="outlined"
-            fullWidth
+            inputRef={nameRef}
             error={errors.name}
-            helperText={errors.name ? "Please fill the name" : ""}
-          />
-          <TextField
-            id="outlined-basic"
-            inputRef={katakanaRef}
-            label="Katakana"
-            variant="outlined"
+            helperText={errors.name && "Please enter your name"}
             fullWidth
+          />
+
+          <TextField
+            label="Katakana"
+            inputRef={katakanaRef}
             error={errors.katakana}
+            helperText={errors.katakana && "Must be Katakana"}
             inputProps={{ lang: "ja" }}
-             helperText={errors.katakana ? "Must be Katakana" : ""}
             onBlur={(e) => {
-              const converted = e.target.value.replace(
+              e.target.value = e.target.value.replace(
                 /[\u3041-\u3096]/g,
                 (ch) => String.fromCharCode(ch.charCodeAt(0) + 0x60)
               );
-              e.target.value = converted;
             }}
+            fullWidth
           />
-          <FormControl fullWidth>
-            <InputLabel id="Year">Enrollment Year</InputLabel>
+
+          <FormControl fullWidth error={errors.schoolyear}>
+            <InputLabel>Enrollment Year</InputLabel>
             <Select
-              error={errors.schoolyear}
-              labelId="work-label"
               value={schoolyear}
-               helperText={errors.schoolyear ? "Please Choose Year" : ""}
-              label="Work"
+              label="Enrollment Year"
               onChange={(e) => {
                 setSchoolyear(e.target.value);
                 setMajor("");
@@ -213,22 +200,23 @@ export default function SignUp() {
               <MenuItem value="">
                 <em>Select year</em>
               </MenuItem>
-              {Object.keys(course).map((k) => {
-                return (
-                  <MenuItem key={k} value={k}>
-                    {k}
-                  </MenuItem>
-                );
-              })}
+              {Object.keys(course).map((k) => (
+                <MenuItem key={k} value={k}>
+                  {k}
+                </MenuItem>
+              ))}
             </Select>
+            {errors.schoolyear && (
+              <Typography variant="caption" color="error">
+                Please select year
+              </Typography>
+            )}
           </FormControl>
-          <FormControl fullWidth>
-            <InputLabel id="major">Major</InputLabel>
+
+          <FormControl fullWidth error={errors.major}>
+            <InputLabel>Major</InputLabel>
             <Select
-              error={errors.major}
-              labelId="major"
               value={major}
-            helperText={errors.major ? "Please Choose Major" : ""}
               label="Major"
               onChange={(e) => setMajor(e.target.value)}
             >
@@ -241,78 +229,83 @@ export default function SignUp() {
                 </MenuItem>
               ))}
             </Select>
+            {errors.major && (
+              <Typography variant="caption" color="error">
+                Please select major
+              </Typography>
+            )}
           </FormControl>
+
           <TextField
-            id="outlined-basic"
-            inputRef={stunoRef}
             label="Student No"
-            variant="outlined"
-            fullWidth
+            inputRef={stunoRef}
             error={errors.stuno}
-             helperText={errors.stuno ? "Format Eg: G25016" : ""}
-          />
-          <TextField
-            inputRef={emailRef}
-            id="outlined-basic"
-            label="Email"
-            variant="outlined"
+            helperText={errors.stuno && "Format: G25016"}
             fullWidth
-            error={errors.email}
-             helperText={errors.email ? "Please fill the Email" : ""}
           />
+
           <TextField
+            label="Email"
+            inputRef={emailRef}
+            error={errors.email}
+            helperText={errors.email && "Invalid email"}
+            fullWidth
+          />
+
+          <TextField
+            label="Password"
             inputRef={passwordRef}
             type={showPassword ? "text" : "password"}
-            id="outlined-basic"
-            label="Password"
-            variant="outlined"
-            fullWidth
             error={errors.password}
-             helperText={errors.password ? "Please fill the Password" : ""}
+            helperText={errors.password && "Please enter password"}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
+                  <IconButton onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-          />
-          <TextField
-            inputRef={confirmpasswordRef}
-            type={showPassword ? "text" : "password"}
-            id="outlined-basic"
-            label="Confirm Password"
-            variant="outlined"
             fullWidth
-            error={errors.confirmPassword}
-             helperText={errors.confirmPassword ? "Password and Confirm Password are must be same" : ""}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
           />
-          <Button type="submit" variant="contained" fullWidth>
-            Register
+
+          <TextField
+            label="Confirm Password"
+            inputRef={confirmPasswordRef}
+            type={showPassword ? "text" : "password"}
+            error={errors.confirmPassword}
+            helperText={errors.confirmPassword && "Passwords do not match"}
+            fullWidth
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            sx={{
+              mt: 1,
+              py: 1.2,
+              borderRadius: 2,
+              fontWeight: 600,
+              textTransform: "none",
+            }}
+          >
+            Create Account
           </Button>
         </Box>
-      </form>
-      <Typography sx={{ mt: 2, textAlign: "center" }}>
-        Already have an account?
-        <Link to="/">Login</Link>
-      </Typography>
+
+       
+        <Typography
+          variant="body2"
+          sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
+        >
+          Already have an account?{" "}
+          <Link to="/" style={{ fontWeight: 600 }}>
+            Login
+          </Link>
+        </Typography>
+      </Box>
     </Box>
   );
 }
