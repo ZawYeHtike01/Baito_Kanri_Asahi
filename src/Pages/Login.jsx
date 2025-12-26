@@ -1,25 +1,27 @@
 import {
-  CircularProgress,
-  Alert,
   Box,
   Button,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
   TextField,
   Typography,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { getDoc, doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 import { useApp } from "../App";
+import { auth, db } from "../Firebase";
 import logo from "../assets/logo.png";
-import { db, auth } from "../Firebase";
 
 export default function Login() {
   const { setisAuth, setUserData, setGlobalMsg } = useApp();
+
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,8 +30,6 @@ export default function Login() {
     password: false,
   });
 
-  const emailRef = useRef();
-  const passwordRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,135 +40,123 @@ export default function Login() {
     meta.content = "noindex, nofollow";
     document.head.appendChild(meta);
 
-    return () => {
-      document.head.removeChild(meta);
-    };
+    return () => document.head.removeChild(meta);
   }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const newErrors = {
+      email: !emailRef.current.value,
+      password: !passwordRef.current.value,
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some(Boolean)) {
+      setGlobalMsg("Please fill email and password");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        emailRef.current.value,
+        passwordRef.current.value
+      );
+
+      const user = auth.currentUser;
+      const snap = await getDoc(doc(db, "users", user.uid));
+
+      setUserData(snap.data());
+      setisAuth(true);
+      setGlobalMsg("Login Successfully");
+      navigate("/home");
+    } catch (err) {
+      if (
+        err.code === "auth/user-not-found" ||
+        err.code === "auth/wrong-password" ||
+        err.code === "auth/invalid-credential"
+      ) {
+        setErrors({ email: true, password: true });
+        setGlobalMsg("Email or password is incorrect");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box
       sx={{
-        width: { xs: "85%", sm: "50%", md: "27%" },
+        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: 5,
-        margin: "auto",
-        paddingBottom: 5,
-        background: "rgba(255, 255, 255, 0.2)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+       
       }}
     >
       {loading && (
         <Box
           sx={{
             position: "fixed",
-            width: "100%",
-            height: "100%",
-            background: "rgba(255, 255, 255, 0.4)",
-            backdropFilter: "blur(6px)",
+            inset: 0,
+            background: "rgba(255,255,255,0.6)",
+            backdropFilter: "blur(8px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            zIndex: 2000,
+            zIndex: 3000,
           }}
         >
-          <CircularProgress size={70} />
+          <CircularProgress size={64} />
         </Box>
       )}
 
       <Box
-        component="img"
-        src={logo}
-        alt="BaitoKanri Logo"
-        sx={{ width: 120, mb: 2 }}
-      />
-
-      <Typography variant="h3">Login</Typography>
-
-      <Alert severity="warning" sx={{ mt: 2 }}>
-        All fields required
-      </Alert>
-
-      <form
-        style={{ width: "75%" }}
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setLoading(true);
-
-          const newError = {
-            email: !emailRef.current.value,
-            password: !passwordRef.current.value,
-          };
-          setErrors(newError);
-
-          if (Object.values(newError).some(Boolean)) {
-            setGlobalMsg("Please Fill Email And Password");
-            setLoading(false);
-            return;
-          }
-
-          try {
-            await signInWithEmailAndPassword(
-              auth,
-              emailRef.current.value,
-              passwordRef.current.value
-            );
-
-            const user = auth.currentUser;
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-
-            setUserData(snap.data());
-            setisAuth(true);
-            setGlobalMsg("Login Successfully");
-            navigate("/home");
-          } catch (e) {
-            if (
-              e.code === "auth/user-not-found" ||
-              e.code === "auth/wrong-password" ||
-              e.code === "auth/invalid-credential"
-            ) {
-              setErrors({ email: true, password: true });
-              setGlobalMsg("Email and Password is Wrong");
-            }
-          } finally {
-            setLoading(false);
-          }
+        sx={{
+          width: { xs: "90%", sm: 400 },
+          p: 4,
+          borderRadius: 4,
+          background: "rgba(255,255,255,0.75)",
+          backdropFilter: "blur(14px)",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            mt: 2,
-            width: "100%",
-          }}
-        >
+        {/* Header */}
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          <Box component="img" src={logo} sx={{ width: 90, mb: 1 }} />
+          <Typography variant="h4" fontWeight={700}>
+            Welcome Back
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Sign in to continue
+          </Typography>
+        </Box>
+
+        {/* Form */}
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
           <TextField
-            inputRef={emailRef}
             label="Email"
-            fullWidth
+            inputRef={emailRef}
             error={errors.email}
+            helperText={errors.email && "Please enter a valid email"}
+            fullWidth
           />
 
           <TextField
-            inputRef={passwordRef}
             label="Password"
+            inputRef={passwordRef}
             type={showPassword ? "text" : "password"}
-            fullWidth
             error={errors.password}
+            helperText={errors.password && "Please enter your password"}
+            fullWidth
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
+                  <IconButton onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
@@ -176,16 +164,33 @@ export default function Login() {
             }}
           />
 
-          <Button type="submit" variant="contained" fullWidth>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            sx={{
+              mt: 1,
+              py: 1.2,
+              borderRadius: 2,
+              fontWeight: 600,
+              textTransform: "none",
+            }}
+          >
             Login
           </Button>
         </Box>
-      </form>
 
-      <Typography sx={{ mt: 2, textAlign: "center" }}>
-        Don&apos;t have an account?{" "}
-        <Link to="/signup">Register</Link>
-      </Typography>
+        {/* Footer */}
+        <Typography
+          variant="body2"
+          sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
+        >
+          Don&apos;t have an account?{" "}
+          <Link to="/signup" style={{ fontWeight: 600 }}>
+            Register
+          </Link>
+        </Typography>
+      </Box>
     </Box>
   );
 }
