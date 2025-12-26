@@ -8,8 +8,10 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
-  Typography,Button
+  Typography,
+  Button,
 } from "@mui/material";
+import ViewDayIcon from "@mui/icons-material/ViewDay";
 import Modal from "@mui/material/Modal";
 import {
   Home as HomeIcon,
@@ -29,7 +31,7 @@ export default function AppDrawer() {
   const navigate = useNavigate();
   const { showDrawer, setShowDrawer } = useApp();
   const { setisAuth, setGlobalMsg, userData } = useApp();
-  const [deleteModal,setDeleteModal]=useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   return (
     <div>
       <Drawer open={showDrawer} onClose={() => setShowDrawer(false)}>
@@ -53,14 +55,17 @@ export default function AppDrawer() {
               bottom: -30,
             }}
           >
-            <Avatar  sx={{
+            <Avatar
+              sx={{
                 width: 94,
                 height: 94,
                 color: "white",
-				fontSize: "40px",
-				backgroundColor: "#9fa8da",
-              }} 
-			>{userData?.userNameKatakana?.[0] || "U"}</Avatar>
+                fontSize: "40px",
+                backgroundColor: "#9fa8da",
+              }}
+            >
+              {userData?.userNameKatakana?.[0] || "U"}
+            </Avatar>
             <Box>
               <Typography sx={{ fontWeight: "bold" }}>
                 {userData.userNameKatakana}
@@ -102,7 +107,21 @@ export default function AppDrawer() {
           </ListItem>
           <ListItem>
             <ListItemButton
-              onClick={ () => {
+              onClick={() => {
+                navigate("/checkweek");
+                setShowDrawer(false);
+              }}
+            >
+              <ListItemIcon>
+                <ViewDayIcon />
+              </ListItemIcon>
+              <ListItemText>Check Week</ListItemText>
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
                 setDeleteModal(true);
               }}
             >
@@ -114,7 +133,7 @@ export default function AppDrawer() {
           </ListItem>
         </List>
       </Drawer>
-	  <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
+      <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
         <Box
           sx={{
             position: "absolute",
@@ -131,7 +150,6 @@ export default function AppDrawer() {
           <Box mt={2} display="flex" justifyContent="flex-end" gap={1}>
             <Button onClick={() => setDeleteModal(false)}>Close</Button>
             <Button
-              
               variant="contained"
               onClick={async () => {
                 await signOut(auth);
