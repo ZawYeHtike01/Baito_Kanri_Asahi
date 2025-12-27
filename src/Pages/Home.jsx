@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../App";
 import { useNavigate } from "react-router-dom";
-import { ArrowBack, ArrowForward, Flag } from "@mui/icons-material";
+import { ArrowBack, ArrowForward, Flag, Weekend } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
@@ -197,8 +197,23 @@ export default function Home() {
   const getMonthKey = (d) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
-  const isInRange = (date, start, end) =>
-    date >= new Date(start) && date <= new Date(end);
+  const getSpecialRange = (weekStart, weekEnd) => {
+    if (!checkHour?.length) return null;
+
+    for (const r of checkHour) {
+      const rStart = new Date(r.start);
+      const rEnd = new Date(r.end);
+
+      if (weekStart <= rEnd && weekEnd >= rStart) {
+        return {
+          start: rStart,
+          end: rEnd,
+        };
+      }
+    }
+
+    return null;
+  };
 
   const checkOver = () => {
     if (!checkHour?.length || !monthCache) return;
@@ -208,22 +223,24 @@ export default function Home() {
 
     const year = currentDate.getFullYear();
     let cursor = new Date(`${year}-01-01`);
-    const yearEnd = new Date(`${year+1}-01-31`);
+    const yearEnd = new Date(`${year + 1}-01-31`);
     while (cursor <= yearEnd) {
       const weekStart = new Date(cursor);
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);
-
       let totalHours = 0;
       let isSpecialWeek = false;
-      checkHour.forEach((r) => {
-        if (
-          isInRange(weekStart, r.start, r.end) ||
-          isInRange(weekEnd, r.start, r.end)
-        ) {
-          isSpecialWeek = true;
+
+      const range = getSpecialRange(weekStart, weekEnd);
+
+      if (range) {
+        isSpecialWeek = true;
+        if (range.end < weekEnd) {
+          weekEnd.setTime(range.end.getTime());
+        }if(range.start>weekStart){
+          weekStart.setTime(range.start.getTime());
         }
-      });
+      }
 
       for (
         let d = new Date(weekStart);
@@ -248,7 +265,8 @@ export default function Home() {
           d <= weekEnd;
           d.setDate(d.getDate() + 1)
         ) {
-          if(!overfw.some(e=>e===formatDate(d)))over40.add(formatDate(d));
+          if (!overfw.some((e) => e === formatDate(d)))
+            over40.add(formatDate(d));
         }
       } else if (!isSpecialWeek && totalHours > 28) {
         for (
@@ -256,14 +274,15 @@ export default function Home() {
           d <= weekEnd;
           d.setDate(d.getDate() + 1)
         ) {
-          if(!overtw.some(e=>e===formatDate(d)))over28.add(formatDate(d));
+          if (!overtw.some((e) => e === formatDate(d)))
+            over28.add(formatDate(d));
         }
       }
       cursor.setDate(cursor.getDate() + 1);
     }
 
-    setOvertw(prev => [...prev, ...over28]);
-    setOverfw(prev => [...prev, ...over40]);
+    setOvertw((prev) => [...prev, ...over28]);
+    setOverfw((prev) => [...prev, ...over40]);
   };
 
   const getLimit = async () => {
@@ -277,31 +296,26 @@ export default function Home() {
   };
   useEffect(() => {
     try {
-       getLimit();
+      getLimit();
       getItem();
     } catch (e) {
       console.log(e.message);
     }
   }, [currentDate]);
- 
+
   useEffect(() => {
-    if(!checkHour) return;
+    if (!checkHour) return;
     checkOver();
-    console.log("40",overfw)
-    console.log("20",overtw)
-  }, [checkHour,currentDate]);
+    console.log("sw", overfw);
+  }, [checkHour, currentDate]);
 
   const itOver = (date) => {
-  if (!date) return false;
+    if (!date) return false;
 
-  const d = FormartDate(date);
+    const d = FormartDate(date);
 
-  return (
-    overfw.some(e => e === d) ||
-    overtw.some(e => e === d)
-  );
-};
-
+    return overfw.some((e) => e === d) || overtw.some((e) => e === d);
+  };
 
   return (
     <Box
@@ -393,7 +407,7 @@ export default function Home() {
               }
             }}
             sx={{
-              backgroundColor: itOver(date) ? "red" :"white",
+              backgroundColor: itOver(date) ? "red" : "white",
               p: "4px",
               cursor: date ? "pointer" : "default",
               display: "flex",
@@ -401,7 +415,7 @@ export default function Home() {
               alignItems: "center",
               justifyContent: "flex-start",
               border: "1px solid #ddd",
-              color:itOver(date)? "white" :"black",
+              color: itOver(date) ? "white" : "black",
               transition: "0.2s",
               "&:hover": date && {
                 backgroundColor: "#f0f0f0",
@@ -411,7 +425,7 @@ export default function Home() {
             {date &&
               (() => {
                 const dd = FormartDate(date);
-                
+
                 const key = `${currentDate.getFullYear()}-${String(
                   currentDate.getMonth() + 1
                 ).padStart(2, "0")}`;
