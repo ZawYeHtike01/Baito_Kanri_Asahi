@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import ViewDayIcon from "@mui/icons-material/ViewDay";
 import Modal from "@mui/material/Modal";
+import WorkIcon from '@mui/icons-material/Work';
 import {
   Home as HomeIcon,
   Person as ProfileIcon,
@@ -116,6 +117,19 @@ export default function AppDrawer() {
                 <ViewDayIcon />
               </ListItemIcon>
               <ListItemText>Check Week</ListItemText>
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              onClick={() => {
+                setShowDrawer(false);
+                navigate("/workspace");
+              }}
+            >
+              <ListItemIcon>
+                <WorkIcon/>
+              </ListItemIcon>
+              <ListItemText>Work Space</ListItemText>
             </ListItemButton>
           </ListItem>
           <Divider />

@@ -124,8 +124,7 @@ export default function SignUp() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background:
-          "linear-gradient(135deg, rgba(99,102,241,.2), rgba(236,72,153,.2))",
+        
         marginTop: { xs: "55px", sm: "55px", md: "70px" },
       }}
     >
