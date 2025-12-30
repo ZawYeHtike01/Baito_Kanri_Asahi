@@ -33,7 +33,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "ログイン | BaitoKanri";
+    document.title = "BaitoKanri";
 
     const meta = document.createElement("meta");
     meta.name = "robots";

@@ -18,6 +18,7 @@ import { auth } from "./Firebase";
 import Profile from "./Pages/Profile";
 import LandingPage from "./Pages/LandingPage";
 import CheckWeek from "./Pages/CheckWeek";
+import WorkSpace from "./Pages/WorkSpace";
 
 const AppContext = createContext();
 
@@ -79,6 +80,14 @@ const routes = [
         )
 
       },
+      {
+        path:"/workspace",
+        element:(
+          <ProtectedRoute>
+            <WorkSpace/>
+          </ProtectedRoute>
+        )
+      },
     ],
   },
 ];
@@ -113,10 +122,8 @@ function App() {
     async function fetchWorks() {
       const user = auth.currentUser;
       if (!user) return;
-
       const worksRef = collection(db, "worksname", user.uid, "works");
       const snap = await getDocs(worksRef);
-
       const list = snap.docs.map((doc) => ({
         work: doc.id,
         ...doc.data(),
@@ -126,11 +133,11 @@ function App() {
 
     fetchWorks();
   }, [isauth]);
-
   
   useEffect(() => {
     console.log("course updated:", course);
-  }, [course]);
+    console.log("work name",workname)
+  }, [course,workname]);
   return (
     <AppContext.Provider
       value={{
