@@ -72,21 +72,20 @@ const routes = [
         ),
       },
       {
-        path:"/checkweek",
-        element:(
+        path: "/checkweek",
+        element: (
           <ProtectedRoute>
-            <CheckWeek/>
+            <CheckWeek />
           </ProtectedRoute>
-        )
-
+        ),
       },
       {
-        path:"/workspace",
-        element:(
+        path: "/workspace",
+        element: (
           <ProtectedRoute>
-            <WorkSpace/>
+            <WorkSpace />
           </ProtectedRoute>
-        )
+        ),
       },
     ],
   },
@@ -110,6 +109,7 @@ function App() {
   const [total, setTotal] = useState();
   const [checkHour, setCheckHour] = useState({});
   const [course, setCourse] = useState({});
+  const [admin, setAdmin] = useState(false);
   useEffect(() => {
     async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -133,14 +133,15 @@ function App() {
 
     fetchWorks();
   }, [isauth]);
-  
+
   useEffect(() => {
-    console.log("course updated:", course);
-    console.log("work name",workname)
-  }, [course,workname]);
+    console.log("user data", userData);
+  }, [course, workname]);
   return (
     <AppContext.Provider
       value={{
+        admin,
+        setAdmin,
         course,
         setCourse,
         checkHour,

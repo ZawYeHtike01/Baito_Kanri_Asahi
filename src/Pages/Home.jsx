@@ -280,7 +280,6 @@ export default function Home() {
       }
       cursor.setDate(cursor.getDate() + 1);
     }
-
     setOvertw((prev) => [...prev, ...over28]);
     setOverfw((prev) => [...prev, ...over40]);
   };
@@ -306,7 +305,6 @@ export default function Home() {
   useEffect(() => {
     if (!checkHour) return;
     checkOver();
-    console.log("sw", overfw);
   }, [checkHour, currentDate]);
 
   const itOver = (date) => {

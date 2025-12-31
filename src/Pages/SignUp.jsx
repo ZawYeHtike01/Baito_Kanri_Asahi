@@ -100,6 +100,7 @@ export default function SignUp() {
           studentNo: stunoRef.current.value,
           schoolYear: schoolyear,
           major,
+          role:"student",
         },
         { merge: true }
       );
