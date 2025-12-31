@@ -117,7 +117,7 @@ export default function WorkList() {
     <Box
       sx={{
         width: { xs: "95%", sm: "450px", md: "400px" },
-        height: 650,
+        height: 550,
         position: "relative",
         background: "rgba(255, 255, 255, 0.02)",
         backdropFilter: "blur(15px)",
