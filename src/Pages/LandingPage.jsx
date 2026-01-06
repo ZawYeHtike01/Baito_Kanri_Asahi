@@ -9,6 +9,13 @@ import {
 } from '@mui/icons-material';
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { getIdTokenResult } from "firebase/auth";
+import { useApp } from "../App";
+import { auth, db } from "../Firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect } from 'react';
 
 const FeatureCard = ({ icon, title, desc }) => (
   <Card sx={{ 
@@ -25,6 +32,32 @@ const FeatureCard = ({ icon, title, desc }) => (
 
 const LandingPage = () => {
   const navigate=useNavigate();
+  const {setisAuth,setUserData,setAdmin,setGlobalMsg}=useApp();
+  useEffect(() => {
+       const unsub = onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          setisAuth(false);
+          setUserData(null);
+          setAdmin(false);
+          return;
+        }
+  
+        
+        const snap = await getDoc(doc(db, "users", user.uid));
+        const token = await getIdTokenResult(user);
+        const isAdmin = token.claims.admin === true;
+  
+       setUserData(snap.data());
+        setisAuth(true);
+        setGlobalMsg("Login Successfully");
+        if (isAdmin) {
+          navigate("/adminhome");
+          setAdmin(true);
+        } else navigate("/home");
+      });
+  
+      return () => unsub();
+    }, []);
   return (
     <Box sx={{ bgcolor: '#fff', color: '#1a202c' }}>
       

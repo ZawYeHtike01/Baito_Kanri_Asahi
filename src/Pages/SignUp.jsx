@@ -309,7 +309,7 @@ export default function SignUp() {
           sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
         >
           Already have an account?{" "}
-          <Link to="/" style={{ fontWeight: 600 }}>
+          <Link to="/login" style={{ fontWeight: 600 }}>
             Login
           </Link>
         </Typography>
