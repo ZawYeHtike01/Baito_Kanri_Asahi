@@ -21,6 +21,9 @@ import CheckWeek from "./Pages/CheckWeek";
 import WorkSpace from "./Pages/WorkSpace";
 import AdminHome from "./admin/Pages/AdminHome";
 import AdminRoute from "./AdminProctedRouted";
+import Student from "./admin/Pages/Student";
+import StudentShift from "./admin/Pages/StudentShift";
+import StudentWorkList from "./admin/Pages/StudentWorkList";
 const AppContext = createContext();
 
 const routes = [
@@ -98,6 +101,36 @@ const routes = [
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/student",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+              <Student />
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/student/:id",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+              <StudentShift/>
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/student/:id/daydata",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+             <StudentWorkList/>
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ];
@@ -121,9 +154,9 @@ function App() {
   const [checkHour, setCheckHour] = useState({});
   const [course, setCourse] = useState({});
   const [admin, setAdmin] = useState(false);
-  const [student,setStudent]=useState({});
-  const [shift,setShift]=useState({});
-  const [time,setTime]=useState({});
+  const [student, setStudent] = useState([]);
+  const [shift, setShift] = useState({});
+  const [time, setTime] = useState({});
   useEffect(() => {
     async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -135,7 +168,7 @@ function App() {
   useEffect(() => {
     async function fetchWorks() {
       const user = auth.currentUser;
-      if (!user) return;
+      if (!user || admin) return;
       const worksRef = collection(db, "worksname", user.uid, "works");
       const snap = await getDocs(worksRef);
       const list = snap.docs.map((doc) => ({
@@ -144,14 +177,31 @@ function App() {
       }));
       setWorkName(list);
     }
-
     fetchWorks();
   }, [isauth]);
+  useEffect(() => {
+    if (!admin) return;
 
-  useEffect(() => {}, [course, workname]);
+    const getStudents = async () => {
+      const snapshot = await getDocs(collection(db, "users"));
+      const students = snapshot.docs.map((doc, index) => ({
+        userId:doc.id,
+        id: index,
+        ...doc.data(),
+      }));
+      setStudent(students);
+    };
+    getStudents();
+  }, [admin]);
+
+  useEffect(() => {
+    console.log(student);
+  }, [admin]);
   return (
     <AppContext.Provider
       value={{
+        student,
+        setStudent,
         admin,
         setAdmin,
         course,

@@ -11,7 +11,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { getIdTokenResult } from "firebase/auth";
 import { useApp } from "../App";
 import { auth, db } from "../Firebase";
@@ -19,7 +19,8 @@ import logo from "../assets/logo.png";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Login() {
-  const { setisAuth, setUserData, setGlobalMsg, setAdmin } = useApp();
+  const { setisAuth, setUserData, setGlobalMsg, setAdmin, setStudent } =
+    useApp();
 
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -43,27 +44,48 @@ export default function Login() {
     return () => document.head.removeChild(meta);
   }, []);
   useEffect(() => {
-     const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      setLoading(true);
+      try {
+        if (!user) {
+          setisAuth(false);
+          setUserData(null);
+          setAdmin(false);
+          navigate("/login");
+          return;
+        }
+        const token = await getIdTokenResult(user);
+        const isAdmin = token.claims.admin === true;
+
+        setisAuth(true);
+        if (isAdmin) {
+          const snap = await getDoc(doc(db, "admin", user.uid));
+          setUserData(snap.data());
+          const snapshot = await getDocs(collection(db, "users"));
+          const students = snapshot.docs.map((doc, index) => ({
+            userId:doc.id,
+            id: index,
+            ...doc.data(),
+          }));
+          setStudent(students);
+          setAdmin(true);
+          navigate("/adminhome");
+        } else {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          setUserData(snap.data());
+          setAdmin(false);
+          navigate("/home");
+        }
+
+        setGlobalMsg("Login Successfully");
+      } catch (error) {
+        console.error("Auth state error:", error);
+        setGlobalMsg("Authentication failed");
         setisAuth(false);
-        setUserData(null);
         setAdmin(false);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const token = await getIdTokenResult(user);
-      const isAdmin = token.claims.admin === true;
-
-     setUserData(snap.data());
-      setisAuth(true);
-      setGlobalMsg("Login Successfully");
-      if (isAdmin) {
-        navigate("/adminhome");
-        setAdmin(true);
-      } else navigate("/home");
     });
 
     return () => unsub();
@@ -93,16 +115,20 @@ export default function Login() {
       );
 
       const user = auth.currentUser;
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const token = await getIdTokenResult(auth.currentUser);
+      const token = await getIdTokenResult(user);
       const isAdmin = token.claims.admin === true;
-      setUserData(snap.data());
       setisAuth(true);
       setGlobalMsg("Login Successfully");
       if (isAdmin) {
+        const snap = await getDoc(doc(db, "admin", user.uid));
+        setUserData(snap.data());
         navigate("/adminhome");
         setAdmin(true);
-      } else navigate("/home");
+      } else {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        setUserData(snap.data());
+        navigate("/home");
+      }
     } catch (err) {
       if (
         err.code === "auth/user-not-found" ||

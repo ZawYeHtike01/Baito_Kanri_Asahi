@@ -12,19 +12,6 @@ export default function Template() {
   const location = useLocation();
   const isRight =
     !(location.pathname === "/" || location.pathname === "/signup") && isauth;
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    if (isauth) {
-      window.addEventListener("beforeunload", handleBeforeUnload);
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isauth]);
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       {isRight && (

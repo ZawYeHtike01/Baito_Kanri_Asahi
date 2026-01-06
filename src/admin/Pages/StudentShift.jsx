@@ -1,12 +1,17 @@
 import { useState } from "react";
-import { useApp } from "../App";
+import { useApp } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack, ArrowForward, Flag, Weekend } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
-import { getHourDifference } from "./Data";
+import { getHourDifference } from "../../Pages/Data";
+import PersonIcon from "@mui/icons-material/Person";
+import BadgeIcon from "@mui/icons-material/Badge";
+import Avatar from "@mui/material/Avatar";
+import Paper from "@mui/material/Paper";
+import Divider from "@mui/material/Divider";
 import {
   Box,
   IconButton,
@@ -15,12 +20,12 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { FormartDate } from "./Data";
-import { db } from "../Firebase";
-import { auth } from "../Firebase";
+import { FormartDate } from "../../Pages/Data";
+import { auth, db } from "../../Firebase";
 import Modal from "@mui/material/Modal";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useLocation } from "react-router-dom";
 
 import { useEffect } from "react";
 import {
@@ -31,8 +36,11 @@ import {
   documentId,
   getDocs,
 } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 
-export default function Home() {
+export default function StudentShift() {
+  const { state } = useLocation();
+
   const {
     monthCache,
     setMonthCache,
@@ -106,7 +114,7 @@ export default function Home() {
       currentDate.getMonth() + 1
     ).padStart(2, "0")}`;
 
-    const monthData = monthCache[key];
+    const monthData = monthCache[state.userId]?.[key];
     if (!monthData) {
       setTotal(0);
       setSal(0);
@@ -125,11 +133,11 @@ export default function Home() {
     setTotal(Number(sum.toFixed(1)));
   }, [monthCache, currentDate]);
   const getItem = async () => {
-    const user = auth.currentUser;
+    const user = state?.userId;
     const key = `${currentDate.getFullYear()}-${String(
       currentDate.getMonth() + 1
     ).padStart(2, "0")}`;
-    if (monthCache[key]) return monthCache[key];
+    if (monthCache[user]?.[key]) return monthCache[user]?.[key];
     const firstDate = `${currentDate.getFullYear()}-${String(
       currentDate.getMonth() + 1
     ).padStart(2, "0")}-01`;
@@ -142,10 +150,7 @@ export default function Home() {
       currentDate.getMonth() + 1
     ).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
     try {
-      const workshiftsCol = collection(
-        doc(db, "shifts", user.uid),
-        "workshifts"
-      );
+      const workshiftsCol = collection(doc(db, "shifts", user), "workshifts");
       const q = query(
         workshiftsCol,
         where(documentId(), ">=", firstDate),
@@ -158,7 +163,10 @@ export default function Home() {
       setMonthCache((prep) => {
         return {
           ...prep,
-          [key]: map,
+          [user]: {
+            ...(prep[user] || {}),
+            [key]: map,
+          },
         };
       });
       return map;
@@ -250,7 +258,7 @@ export default function Home() {
       ) {
         const dateStr = formatDate(d);
         const monthKey = getMonthKey(d);
-        const dayShift = monthCache[monthKey]?.[dateStr];
+        const dayShift = monthCache[state.userId]?.[monthKey]?.[dateStr];
 
         if (!dayShift) continue;
 
@@ -315,167 +323,217 @@ export default function Home() {
 
     return overfw.some((e) => e === d) || overtw.some((e) => e === d);
   };
-
   return (
     <Box
       sx={{
-        width: { xs: "100%", sm: "100%", md: "50%" },
-        height: "100vh",
-        maxHeight: "600px",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: "Arial, sans-serif",
-        background: "rgba(255, 255, 255, 0.2)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-        borderRadius: "10px",
-        marginTop: { xs: "55px", sm: "55px", md: "70px" },
+        width: "100%",
+        marginTop: {
+          xs: "55px",
+          sm: "55px",
+          md: "70px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        },
       }}
     >
-      <Box
+      <Paper
+        elevation={0}
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          p: "12px 16px",
-          borderBottom: "1px solid #ddd",
-          backgroundColor: "#f8f9fa",
+          width: { xs: "95%", md: "50%" },
+          mb: 2,
+          p: 2,
+          borderRadius: "14px",
+          background: "rgba(255,255,255,0.25)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.3)",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
         }}
       >
-        <IconButton onClick={handlePrevMonth}>
-          <ArrowBack />
-        </IconButton>
-        <Box textAlign={"center"}>
-          <Typography sx={{ fontSize: "18px", fontWeight: "600" }}>
-            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-          </Typography>
-          <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
-            This Month Total Hours : {total} hours
-          </Typography>
-          <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
-            Estimate Salary : {sal} ￥
-          </Typography>
-        </Box>
-        <IconButton onClick={handleNextMonth}>
-          <ArrowForward />
-        </IconButton>
-      </Box>
+        <Divider sx={{ my: 2 }} />
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          borderBottom: "1px solid #ddd",
-          backgroundColor: "#f8f9fa",
-        }}
-      >
-        {daysOfWeek.map((day) => (
-          <Box
-            key={day}
-            sx={{
-              p: "8px 4px",
-              textAlign: "center",
-              fontWeight: "600",
-              fontSize: "12px",
-              color: isSunday(day) ? "red" : "#666",
-              border: "1px solid #ddd",
-            }}
-          >
-            {day}
+        <Box display="flex" justifyContent="space-between">
+          <Box display="flex" alignItems="center" gap={1}>
+            <PersonIcon fontSize="small" color="action" />
+            <Typography fontSize="14px" color="text.secondary">
+              Name
+            </Typography>
           </Box>
-        ))}
-      </Box>
+          <Typography fontWeight={500}>{state.userName}</Typography>
+        </Box>
 
+        <Box display="flex" justifyContent="space-between" mt={1}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <BadgeIcon fontSize="small" color="action" />
+            <Typography fontSize="14px" color="text.secondary">
+              Student No
+            </Typography>
+          </Box>
+          <Typography fontWeight={500}>{state.studentNo}</Typography>
+        </Box>
+      </Paper>
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gridTemplateRows: "repeat(6, 1fr)",
-          flex: 1,
+          width: { xs: "100%", sm: "100%", md: "50%" },
+          height: "100vh",
+          maxHeight: "600px",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily: "Arial, sans-serif",
+          background: "rgba(255, 255, 255, 0.2)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.3)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+          borderRadius: "10px",
         }}
       >
-        {days.map((date, index) => (
-          <Box
-            key={index}
-            onClick={() => {
-              if (date) {
-                const dd = FormartDate(date);
-                navigate("/home/worklist");
-                setSelectedDate(dd);
-              }
-            }}
-            sx={{
-              backgroundColor: itOver(date) ? "red" : "white",
-              p: "4px",
-              cursor: date ? "pointer" : "default",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              border: "1px solid #ddd",
-              color: itOver(date) ? "white" : "black",
-              transition: "0.2s",
-              "&:hover": date && {
-                backgroundColor: "#f0f0f0",
-              },
-            }}
-          >
-            {date &&
-              (() => {
-                const dd = FormartDate(date);
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: "12px 16px",
+            borderBottom: "1px solid #ddd",
+            backgroundColor: "#f8f9fa",
+          }}
+        >
+          <IconButton onClick={handlePrevMonth}>
+            <ArrowBack />
+          </IconButton>
+          <Box textAlign={"center"}>
+            <Typography sx={{ fontSize: "18px", fontWeight: "600" }}>
+              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+            </Typography>
+            <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
+              This Month Total Hours : {total} hours
+            </Typography>
+            <Typography sx={{ fontSize: "13px", color: "#ccc" }}>
+              Estimate Salary : {sal} ￥
+            </Typography>
+          </Box>
+          <IconButton onClick={handleNextMonth}>
+            <ArrowForward />
+          </IconButton>
+        </Box>
 
-                const key = `${currentDate.getFullYear()}-${String(
-                  currentDate.getMonth() + 1
-                ).padStart(2, "0")}`;
-                const shift = monthCache[key]?.[dd];
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            borderBottom: "1px solid #ddd",
+            backgroundColor: "#f8f9fa",
+          }}
+        >
+          {daysOfWeek.map((day) => (
+            <Box
+              key={day}
+              sx={{
+                p: "8px 4px",
+                textAlign: "center",
+                fontWeight: "600",
+                fontSize: "12px",
+                color: isSunday(day) ? "red" : "#666",
+                border: "1px solid #ddd",
+              }}
+            >
+              {day}
+            </Box>
+          ))}
+        </Box>
 
-                let time = "";
-                if (shift && Object.keys(shift).length > 0) {
-                  const firstKey = Object.keys(shift)[0];
-                  const s = shift[firstKey];
-                  time = `(${s.start}-${s.end})`;
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            gridTemplateRows: "repeat(6, 1fr)",
+            flex: 1,
+          }}
+        >
+          {days.map((date, index) => (
+            <Box
+              key={index}
+              onClick={() => {
+                if (date) {
+                  const dd = FormartDate(date);
+                  navigate(`/student/${state.studentNo}/daydata`, {
+                    state: state,
+                  });
+                  setSelectedDate(dd);
                 }
+              }}
+              sx={{
+                backgroundColor: itOver(date) ? "red" : "white",
+                p: "4px",
+                cursor: date ? "pointer" : "default",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                border: "1px solid #ddd",
+                color: itOver(date) ? "white" : "black",
+                transition: "0.2s",
+                "&:hover": date && {
+                  backgroundColor: "#f0f0f0",
+                },
+              }}
+            >
+              {date &&
+                (() => {
+                  const dd = FormartDate(date);
 
-                return (
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  >
+                  const key = `${currentDate.getFullYear()}-${String(
+                    currentDate.getMonth() + 1
+                  ).padStart(2, "0")}`;
+                  const shift = monthCache[state.userId]?.[key]?.[dd];
+
+                  let time = "";
+                  if (shift && Object.keys(shift).length > 0) {
+                    const firstKey = Object.keys(shift)[0];
+                    const s = shift[firstKey];
+                    time = `(${s.start}-${s.end})`;
+                  }
+
+                  return (
                     <Box
                       sx={{
-                        fontSize: "14px",
-                        fontWeight: isToday(date) ? "700" : "400",
-                        color: isToday(date)
-                          ? "white"
-                          : isHolidays(date)
-                          ? "white"
-                          : "#333",
-                        width: "28px",
-                        height: "28px",
-                        borderRadius: "50%",
+                        textAlign: "center",
                         display: "flex",
+                        flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: isToday(date)
-                          ? "#1976d2"
-                          : isHolidays(date)
-                          ? "red"
-                          : "transparent",
                       }}
                     >
-                      {date.getDate()}
+                      <Box
+                        sx={{
+                          fontSize: "14px",
+                          fontWeight: isToday(date) ? "700" : "400",
+                          color: isToday(date)
+                            ? "white"
+                            : isHolidays(date)
+                            ? "white"
+                            : "#333",
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: isToday(date)
+                            ? "#1976d2"
+                            : isHolidays(date)
+                            ? "red"
+                            : "transparent",
+                        }}
+                      >
+                        {date.getDate()}
+                      </Box>
+                      <Typography sx={{ fontSize: "12px" }}>{time}</Typography>
                     </Box>
-                    <Typography sx={{ fontSize: "12px" }}>{time}</Typography>
-                  </Box>
-                );
-              })()}
-          </Box>
-        ))}
+                  );
+                })()}
+            </Box>
+          ))}
+        </Box>
       </Box>
     </Box>
   );

@@ -14,7 +14,7 @@ import {
 import ViewDayIcon from "@mui/icons-material/ViewDay";
 import Modal from "@mui/material/Modal";
 import WorkIcon from "@mui/icons-material/Work";
-import Groups2Icon from '@mui/icons-material/Groups2';
+import Groups2Icon from "@mui/icons-material/Groups2";
 import {
   Home as HomeIcon,
   Person as ProfileIcon,
@@ -32,7 +32,7 @@ import { useState } from "react";
 export default function AppDrawer() {
   const navigate = useNavigate();
   const { showDrawer, setShowDrawer } = useApp();
-  const { setisAuth, setGlobalMsg, userData, admin,setAdmin} = useApp();
+  const { setisAuth, setGlobalMsg, userData, admin, setAdmin } = useApp();
   const [deleteModal, setDeleteModal] = useState(false);
   return (
     <div>
@@ -72,11 +72,11 @@ export default function AppDrawer() {
                 </Avatar>
                 <Box>
                   <Typography sx={{ fontWeight: "bold" }}>
-                    {userData.userNameKatakana}
+                    {userData?.userNameKatakana}
                   </Typography>
                   <Divider></Divider>
                   <Typography variant="body1" component={"p"}>
-                    {userData.userName}
+                    {userData?.userName}
                   </Typography>
                 </Box>
               </Box>
@@ -97,13 +97,16 @@ export default function AppDrawer() {
               </ListItem>
               <Divider />
               <ListItem>
-                <ListItemButton>
+                <ListItemButton
+                  onClick={() => {
+                    navigate("/student");
+                    setShowDrawer(false);
+                  }}
+                >
                   <ListItemIcon>
-                    <Groups2Icon/>
+                    <Groups2Icon />
                   </ListItemIcon>
-                  <ListItemText>
-                    Student
-                  </ListItemText>
+                  <ListItemText>Student</ListItemText>
                 </ListItemButton>
               </ListItem>
               <Divider />
@@ -156,11 +159,11 @@ export default function AppDrawer() {
                 </Avatar>
                 <Box>
                   <Typography sx={{ fontWeight: "bold" }}>
-                    {userData.userNameKatakana}
+                    {userData?.userNameKatakana}
                   </Typography>
                   <Divider></Divider>
                   <Typography variant="body1" component={"p"}>
-                    {userData.studentNo}
+                    {userData?.studentNo}
                   </Typography>
                 </Box>
               </Box>

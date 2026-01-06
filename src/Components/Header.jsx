@@ -14,15 +14,15 @@ export default function Header() {
   const { setShowDrawer } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
+  const isStudentDayData =
+  location.pathname.startsWith("/student/") || location.pathname.startsWith("/home/worklist");
   return (
     <AppBar>
       <Toolbar>
-        {(location.pathname === "/home/worklist" || location.pathname === "/home/worklist/addwork") ? (
+        {isStudentDayData  ? (
           <IconButton
             onClick={() => {
-              if (location.pathname === "/home/worklist/addwork") {
-                navigate("/home/worklist");
-              } else navigate("/home");
+              navigate(-1);
             }}
           >
             <BackIcon></BackIcon>
