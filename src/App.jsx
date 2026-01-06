@@ -19,7 +19,8 @@ import Profile from "./Pages/Profile";
 import LandingPage from "./Pages/LandingPage";
 import CheckWeek from "./Pages/CheckWeek";
 import WorkSpace from "./Pages/WorkSpace";
-
+import AdminHome from "./admin/Pages/AdminHome";
+import AdminRoute from "./AdminProctedRouted";
 const AppContext = createContext();
 
 const routes = [
@@ -87,6 +88,16 @@ const routes = [
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/adminhome",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+              <AdminHome />
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ];
@@ -110,6 +121,9 @@ function App() {
   const [checkHour, setCheckHour] = useState({});
   const [course, setCourse] = useState({});
   const [admin, setAdmin] = useState(false);
+  const [student,setStudent]=useState({});
+  const [shift,setShift]=useState({});
+  const [time,setTime]=useState({});
   useEffect(() => {
     async function fetchHolidays() {
       const year = currentDate.getFullYear();
@@ -134,9 +148,7 @@ function App() {
     fetchWorks();
   }, [isauth]);
 
-  useEffect(() => {
-    console.log("user data", userData);
-  }, [course, workname]);
+  useEffect(() => {}, [course, workname]);
   return (
     <AppContext.Provider
       value={{

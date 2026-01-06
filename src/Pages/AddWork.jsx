@@ -50,7 +50,7 @@ export default function AddWork() {
   const [work, setWork] = useState("");
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const [rest, setRest] = useState(null);
+  const [rest, setRest] = useState(dayjs().hour("00").minute("00"));
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -85,7 +85,7 @@ export default function AddWork() {
       setOpenModal(false);
       setWork(workNameRef.current.value);
     } catch (e) {
-      setGlobalMsg("Error adding workspace");
+      setGlobalMsg(e.message);
     } finally {
       setLoading(false);
     }
@@ -121,7 +121,7 @@ export default function AddWork() {
       shift[uniqueName] = {
         start: startTime.format("HH:mm"),
         end: endTime.format("HH:mm"),
-        rest: rest.hour() * 60 + rest.minute(),
+        rest: rest.format("HH:mm"),
         salary: workInfo.salary,
       };
 
@@ -139,7 +139,7 @@ export default function AddWork() {
       setGlobalMsg("Shift Saved Successfully");
       navigate("/home");
     } catch (e) {
-      setGlobalMsg("Error saving shift");
+      setGlobalMsg(e.message);
     } finally {
       setLoading(false);
     }
@@ -249,10 +249,16 @@ export default function AddWork() {
           </Box>
 
           <TimePicker
-            label="Rest (minutes)"
-            views={["minutes"]}
+            label="Rest"
+            ampm={false}
+            views={["hours", "minutes"]}
+            format="HH:mm" 
             value={rest}
-            onChange={(v) => setRest(v)}
+            onChange={(v) => {
+              setRest(v);
+            }}
+            minTime={dayjs().startOf("day")}
+            maxTime={dayjs().startOf("day").add(5, "hour")}
             slotProps={{ textField: { fullWidth: true } }}
           />
 

@@ -112,6 +112,8 @@ export default function SignUp() {
         setErrors((prev) => ({ ...prev, email: true }));
         setGlobalMsg("This email is already in use");
       }
+        setGlobalMsg(err.message)
+
     } finally {
       setLoading(false);
     }

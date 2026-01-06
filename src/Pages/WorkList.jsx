@@ -59,7 +59,9 @@ export default function WorkList() {
   const [y, m] = selectedDate.split("-");
   const monthKey = `${y}-${m}`;
   const todayShifts = monthCache[monthKey]?.[selectedDate] || {};
-  const filteredHoliday = JapanseHolidays.filter((i) => i.date === selectedDate);
+  const filteredHoliday = JapanseHolidays.filter(
+    (i) => i.date === selectedDate
+  );
 
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -68,7 +70,7 @@ export default function WorkList() {
   const [work, setWork] = useState("");
   const [startTime, setStartTime] = useState(dayjs());
   const [endTime, setEndTime] = useState(dayjs());
-  const [rest, setRest] = useState(dayjs().hour(0).minute(0));
+  const [rest, setRest] = useState(dayjs());
   const [salary, setSalary] = useState(0);
   const [deleteInfo, setDeleteInfo] = useState({ date: "", name: "" });
 
@@ -77,7 +79,7 @@ export default function WorkList() {
     const data = {
       start: startTime.format("HH:mm"),
       end: endTime.format("HH:mm"),
-      rest: rest.minute() + (rest.hour() * 60),
+      rest: rest.format("HH:mm"),
       salary: salary,
     };
 
@@ -148,18 +150,44 @@ export default function WorkList() {
         </Box>
       )}
 
-      <Box sx={{ p: 3, borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "center" }}>
-        <Typography variant="h6" fontWeight="800" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+      <Box
+        sx={{
+          p: 3,
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          textAlign: "center",
+        }}
+      >
+        <Typography
+          variant="h6"
+          fontWeight="800"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+          }}
+        >
           <CalendarIcon color="primary" /> {selectedDate}
         </Typography>
         {filteredHoliday.length > 0 && (
-          <Typography variant="caption" sx={{ color: "#ff5252", fontWeight: "bold" }}>
+          <Typography
+            variant="caption"
+            sx={{ color: "#ff5252", fontWeight: "bold" }}
+          >
             {filteredHoliday[0].localName}
           </Typography>
         )}
       </Box>
 
-      <Box sx={{ flexGrow: 1, overflowY: "auto", px: 2, py: 2, '&::-webkit-scrollbar': { display: 'none' } }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          px: 2,
+          py: 2,
+          "&::-webkit-scrollbar": { display: "none" },
+        }}
+      >
         <List sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {Object.keys(todayShifts).map((key) => {
             const item = todayShifts[key];
@@ -174,7 +202,7 @@ export default function WorkList() {
                   py: 1.5,
                   transition: "all 0.2s",
                   cursor: "pointer",
-                  "&:hover": { bgcolor: "rgba(25, 118, 210, 0.12)" }
+                  "&:hover": { bgcolor: "rgba(25, 118, 210, 0.12)" },
                 }}
                 secondaryAction={
                   <IconButton
@@ -184,7 +212,10 @@ export default function WorkList() {
                       setDeleteInfo({ date: selectedDate, name: key });
                       setDeleteModal(true);
                     }}
-                    sx={{ color: "rgba(0,0,0,0.3)", "&:hover": { color: "#ff5252" } }}
+                    sx={{
+                      color: "rgba(0,0,0,0.3)",
+                      "&:hover": { color: "#ff5252" },
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -194,16 +225,31 @@ export default function WorkList() {
                   sx={{ flexGrow: 1 }}
                   onClick={() => {
                     setWork(key);
-                    setStartTime(item.start ? dayjs(item.start, "HH:mm") : dayjs());
+                    setStartTime(
+                      item.start ? dayjs(item.start, "HH:mm") : dayjs()
+                    );
                     setEndTime(item.end ? dayjs(item.end, "HH:mm") : dayjs());
-                    setRest(dayjs().hour(0).minute(item.rest || 0));
+                    setRest(
+                      dayjs(item.rest, "HH:mm")
+                    );
                     setSalary(Number(item.salary || 0));
                     setUpdateModal(true);
                   }}
                 >
-                  <Typography fontWeight="700" sx={{ color: "#1a237e" }}>{key}</Typography>
-                  <Typography variant="body2" sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#1976D2", fontWeight: 600 }}>
-                    <TimeIcon sx={{ fontSize: 16 }} /> {item.start} - {item.end} 
+                  <Typography fontWeight="700" sx={{ color: "#1a237e" }}>
+                    {key}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      color: "#1976D2",
+                      fontWeight: 600,
+                    }}
+                  >
+                    <TimeIcon sx={{ fontSize: 16 }} /> {item.start} - {item.end}
                     <Box component="span" sx={{ ml: 1, opacity: 0.6 }}>
                       ({getHourDifference(item.start, item.end, item.rest)})
                     </Box>
@@ -218,7 +264,12 @@ export default function WorkList() {
       <Fab
         color="primary"
         aria-label="add"
-        sx={{ position: "absolute", bottom: 20, right: 20, boxShadow: "0 8px 16px rgba(25,118,210,0.4)" }}
+        sx={{
+          position: "absolute",
+          bottom: 20,
+          right: 20,
+          boxShadow: "0 8px 16px rgba(25,118,210,0.4)",
+        }}
         onClick={() => navigate("/home/worklist/addwork")}
       >
         <AddIcon />
@@ -226,23 +277,63 @@ export default function WorkList() {
 
       <Modal open={updateModal} onClose={() => setUpdateModal(false)}>
         <Box sx={modalStyle}>
-          <Typography variant="h6" fontWeight="800" mb={3} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            variant="h6"
+            fontWeight="800"
+            mb={3}
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
             <UpdateIcon color="primary" /> Edit Shift
           </Typography>
-          
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <TextField label="Workplace" value={work} fullWidth variant="filled" InputProps={{ readOnly: true }} />
-            
+
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+            <TextField
+              label="Workplace"
+              value={work}
+              fullWidth
+              variant="filled"
+              InputProps={{ readOnly: true }}
+            />
+
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <TimePicker label="Start" value={startTime} onChange={(v) => setStartTime(v)} slotProps={{ textField: { fullWidth: true } }} />
-                <TimePicker label="End" value={endTime} onChange={(v) => setEndTime(v)} slotProps={{ textField: { fullWidth: true } }} />
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <TimePicker
+                  label="Start"
+                  value={startTime}
+                  onChange={(v) => setStartTime(v)}
+                  slotProps={{ textField: { fullWidth: true } }}
+                />
+                <TimePicker
+                  label="End"
+                  value={endTime}
+                  onChange={(v) => setEndTime(v)}
+                  slotProps={{ textField: { fullWidth: true } }}
+                />
               </Box>
-              <TimePicker label="Rest (minutes)" views={["minutes"]} value={rest} onChange={(v) => setRest(v)} slotProps={{ textField: { fullWidth: true } }} />
+              <TimePicker
+                label="Rest"
+                ampm={false}
+                views={["hours", "minutes"]}
+                format="HH:mm"
+                value={rest}
+                onChange={(v) => {
+                  setRest(v);
+                }}
+                minTime={dayjs().startOf("day")}
+                maxTime={dayjs().startOf("day").add(5, "hour")}
+                slotProps={{ textField: { fullWidth: true } }}
+              />
             </LocalizationProvider>
 
             <Box sx={{ display: "flex", gap: 1.5, mt: 1 }}>
-              <Button fullWidth variant="text" onClick={() => setUpdateModal(false)} sx={{ color: "text.secondary" }}>Cancel</Button>
+              <Button
+                fullWidth
+                variant="text"
+                onClick={() => setUpdateModal(false)}
+                sx={{ color: "text.secondary" }}
+              >
+                Cancel
+              </Button>
               <Button
                 fullWidth
                 variant="contained"
@@ -252,7 +343,9 @@ export default function WorkList() {
                     await updateItem();
                     setGlobalMsg("Updated Successfully");
                     setUpdateModal(false);
-                  } finally { setLoading(false); }
+                  } finally {
+                    setLoading(false);
+                  }
                 }}
                 sx={{ borderRadius: "12px", fontWeight: "bold" }}
               >
@@ -266,12 +359,22 @@ export default function WorkList() {
       <Modal open={deleteModal} onClose={() => setDeleteModal(false)}>
         <Box sx={{ ...modalStyle, textAlign: "center" }}>
           <WarningIcon sx={{ fontSize: 50, color: "#ff5252", mb: 2 }} />
-          <Typography variant="h6" fontWeight="bold">Remove Shift?</Typography>
+          <Typography variant="h6" fontWeight="bold">
+            Remove Shift?
+          </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
-            Are you sure you want to delete <b>{deleteInfo.name}</b> on {deleteInfo.date}?
+            Are you sure you want to delete <b>{deleteInfo.name}</b> on{" "}
+            {deleteInfo.date}?
           </Typography>
           <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
-            <Button fullWidth variant="outlined" onClick={() => setDeleteModal(false)} sx={{ borderRadius: "12px" }}>Cancel</Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => setDeleteModal(false)}
+              sx={{ borderRadius: "12px" }}
+            >
+              Cancel
+            </Button>
             <Button
               fullWidth
               variant="contained"
@@ -282,7 +385,9 @@ export default function WorkList() {
                   await deleteItem(deleteInfo.date, deleteInfo.name);
                   setGlobalMsg("Deleted Successfully");
                   setDeleteModal(false);
-                } finally { setLoading(false); }
+                } finally {
+                  setLoading(false);
+                }
               }}
               sx={{ borderRadius: "12px", fontWeight: "bold" }}
             >

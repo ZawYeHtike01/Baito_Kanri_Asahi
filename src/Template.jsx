@@ -4,6 +4,7 @@ import { useApp } from "./App";
 import Header from "./Components/Header";
 import AppDrawer from "./Components/AppDrawer";
 import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Template() {
   const { isauth } = useApp();
@@ -11,6 +12,19 @@ export default function Template() {
   const location = useLocation();
   const isRight =
     !(location.pathname === "/" || location.pathname === "/signup") && isauth;
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    if (isauth) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isauth]);
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       {isRight && (

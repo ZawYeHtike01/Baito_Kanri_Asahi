@@ -12,13 +12,14 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-
+import { getIdTokenResult } from "firebase/auth";
 import { useApp } from "../App";
 import { auth, db } from "../Firebase";
 import logo from "../assets/logo.png";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Login() {
-  const { setisAuth, setUserData, setGlobalMsg } = useApp();
+  const { setisAuth, setUserData, setGlobalMsg, setAdmin } = useApp();
 
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -39,14 +40,38 @@ export default function Login() {
     meta.name = "robots";
     meta.content = "noindex, nofollow";
     document.head.appendChild(meta);
-
     return () => document.head.removeChild(meta);
+  }, []);
+  useEffect(() => {
+     const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setisAuth(false);
+        setUserData(null);
+        setAdmin(false);
+        setLoading(false);
+        return;
+      }
+
+      
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const token = await getIdTokenResult(user);
+      const isAdmin = token.claims.admin === true;
+
+     setUserData(snap.data());
+      setisAuth(true);
+      setGlobalMsg("Login Successfully");
+      if (isAdmin) {
+        navigate("/adminhome");
+        setAdmin(true);
+      } else navigate("/home");
+    });
+
+    return () => unsub();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     const newErrors = {
       email: !emailRef.current.value,
       password: !passwordRef.current.value,
@@ -69,11 +94,15 @@ export default function Login() {
 
       const user = auth.currentUser;
       const snap = await getDoc(doc(db, "users", user.uid));
-
+      const token = await getIdTokenResult(auth.currentUser);
+      const isAdmin = token.claims.admin === true;
       setUserData(snap.data());
       setisAuth(true);
       setGlobalMsg("Login Successfully");
-      navigate("/home");
+      if (isAdmin) {
+        navigate("/adminhome");
+        setAdmin(true);
+      } else navigate("/home");
     } catch (err) {
       if (
         err.code === "auth/user-not-found" ||
@@ -95,8 +124,7 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-         width: { xs: "95%", sm: "50%", md: "27%" },
-       
+        width: { xs: "95%", sm: "50%", md: "27%" },
       }}
     >
       {loading && (
@@ -135,7 +163,11 @@ export default function Login() {
             Sign in to continue
           </Typography>
         </Box>
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: "grid", gap: 2 }}
+        >
           <TextField
             label="Email"
             inputRef={emailRef}
