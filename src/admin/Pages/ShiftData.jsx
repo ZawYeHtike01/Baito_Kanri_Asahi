@@ -35,14 +35,14 @@ const columns = [
 ];
 
 const paginationModel = { page: 0, pageSize: 10 };
-export default function Student() {
+export default function ShiftData() {
   const navigate = useNavigate();
   const { student } = useApp();
   return (
     <Box
       sx={{
         marginTop: { xs: "55px", sm: "55px", md: "70px" },
-        width: { xs: "100%", sm: "100%", md: "90%" },
+         width: { xs: "100%", sm: "100%", md: "90%" },
         background: "rgba(255, 255, 255, 0.2)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
@@ -59,7 +59,7 @@ export default function Student() {
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10, 20]}
         onRowClick={(params) => {
-          navigate(`/student/${params.row.studentNo}`, {
+          navigate(`/shiftdata/${params.row.studentNo}`, {
             state: params.row,
           });
         }}
@@ -68,7 +68,6 @@ export default function Student() {
           "&:hover": {
             cursor: "pointer",
           },
-          
         }}
       />
     </Box>

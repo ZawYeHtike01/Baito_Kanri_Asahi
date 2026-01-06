@@ -15,7 +15,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const isStudentDayData =
-  location.pathname.startsWith("/student/") || location.pathname.startsWith("/home/worklist");
+  location.pathname.startsWith("/shiftdata/") || location.pathname.startsWith("/home/worklist") || location.pathname.startsWith("/student/");
   return (
     <AppBar>
       <Toolbar>

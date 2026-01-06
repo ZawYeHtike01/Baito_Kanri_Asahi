@@ -15,6 +15,7 @@ import ViewDayIcon from "@mui/icons-material/ViewDay";
 import Modal from "@mui/material/Modal";
 import WorkIcon from "@mui/icons-material/Work";
 import Groups2Icon from "@mui/icons-material/Groups2";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import {
   Home as HomeIcon,
   Person as ProfileIcon,
@@ -76,7 +77,7 @@ export default function AppDrawer() {
                   </Typography>
                   <Divider></Divider>
                   <Typography variant="body1" component={"p"}>
-                    {userData?.userName}
+                    Admin
                   </Typography>
                 </Box>
               </Box>
@@ -99,14 +100,27 @@ export default function AppDrawer() {
               <ListItem>
                 <ListItemButton
                   onClick={() => {
+                    navigate("/shiftdata");
+                    setShowDrawer(false);
+                  }}
+                >
+                  <ListItemIcon>
+                    <CalendarMonthIcon/>
+                  </ListItemIcon>
+                  <ListItemText>Shift Data</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton 
+                  onClick={() => {
                     navigate("/student");
                     setShowDrawer(false);
                   }}
                 >
                   <ListItemIcon>
-                    <Groups2Icon />
+                    <Groups2Icon/>
                   </ListItemIcon>
-                  <ListItemText>Student</ListItemText>
+                  <ListItemText>Student Data</ListItemText>
                 </ListItemButton>
               </ListItem>
               <Divider />

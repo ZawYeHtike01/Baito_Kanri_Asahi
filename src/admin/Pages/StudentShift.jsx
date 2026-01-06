@@ -456,7 +456,7 @@ export default function StudentShift() {
               onClick={() => {
                 if (date) {
                   const dd = FormartDate(date);
-                  navigate(`/student/${state.studentNo}/daydata`, {
+                  navigate(`/shiftdata/${state.studentNo}/daydata`, {
                     state: state,
                   });
                   setSelectedDate(dd);

@@ -21,9 +21,11 @@ import CheckWeek from "./Pages/CheckWeek";
 import WorkSpace from "./Pages/WorkSpace";
 import AdminHome from "./admin/Pages/AdminHome";
 import AdminRoute from "./AdminProctedRouted";
-import Student from "./admin/Pages/Student";
+import ShiftData from "./admin/Pages/ShiftData";
 import StudentShift from "./admin/Pages/StudentShift";
 import StudentWorkList from "./admin/Pages/StudentWorkList";
+import Student from "./admin/Pages/Student";
+import StudentProfile from "./admin/Pages/StudentProfoile";
 const AppContext = createContext();
 
 const routes = [
@@ -102,17 +104,17 @@ const routes = [
         ),
       },
       {
-        path: "/student",
+        path: "/shiftdata",
         element: (
           <ProtectedRoute>
             <AdminRoute>
-              <Student />
+              <ShiftData />
             </AdminRoute>
           </ProtectedRoute>
         ),
       },
       {
-        path: "/student/:id",
+        path: "/shiftdata/:id",
         element: (
           <ProtectedRoute>
             <AdminRoute>
@@ -122,11 +124,31 @@ const routes = [
         ),
       },
       {
-        path: "/student/:id/daydata",
+        path: "/shiftdata/:id/daydata",
         element: (
           <ProtectedRoute>
             <AdminRoute>
              <StudentWorkList/>
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/student",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+             <Student/>
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/student/:id",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+             <StudentProfile/>
             </AdminRoute>
           </ProtectedRoute>
         ),
