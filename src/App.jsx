@@ -203,7 +203,6 @@ function App() {
   }, [isauth]);
   useEffect(() => {
     if (!admin) return;
-
     const getStudents = async () => {
       const snapshot = await getDocs(collection(db, "users"));
       const students = snapshot.docs.map((doc, index) => ({
@@ -217,7 +216,7 @@ function App() {
   }, [admin]);
 
   useEffect(() => {
-    console.log(student);
+    console.log(userData)
   }, [admin]);
   return (
     <AppContext.Provider

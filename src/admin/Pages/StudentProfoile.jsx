@@ -20,12 +20,11 @@ import { useState } from "react";
 import { useApp } from "../../App";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../Firebase";
-import { getFunctions, httpsCallable } from "firebase/functions";
 
 export default function StudentProfile() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { student, setStudent, setGlobalMsg } = useApp();
+  const {  setStudent, setGlobalMsg } = useApp();
 
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -69,33 +68,7 @@ export default function StudentProfile() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this account?"))
-      return;
-
-    try {
-      const functions = getFunctions();
-      const deleteStudentAccount = httpsCallable(
-        functions,
-        "deleteStudentAccount"
-      );
-
-      // Call Cloud Function
-      const result = await deleteStudentAccount({ uid: state.userId });
-
-      if (result.data.success) {
-        // Remove from local state
-        setStudent((prev) => prev.filter((s) => s.userId !== state.userId));
-        setGlobalMsg("Account deleted successfully!");
-        navigate("/student");
-      }
-      setGlobalMsg("Account deleted successfully!");
-      navigate("/student");
-    } catch (err) {
-      console.error(err);
-      setGlobalMsg("Failed to delete account.");
-    }
-  };
+  
 
   return (
     <Box

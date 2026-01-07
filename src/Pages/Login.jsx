@@ -19,7 +19,7 @@ import logo from "../assets/logo.png";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Login() {
-  const { setisAuth, setUserData, setGlobalMsg, setAdmin, setStudent } =
+  const { setisAuth, setUserData, setGlobalMsg, setAdmin } =
     useApp();
 
   const emailRef = useRef();
@@ -56,18 +56,10 @@ export default function Login() {
         }
         const token = await getIdTokenResult(user);
         const isAdmin = token.claims.admin === true;
-
         setisAuth(true);
         if (isAdmin) {
           const snap = await getDoc(doc(db, "admin", user.uid));
           setUserData(snap.data());
-          const snapshot = await getDocs(collection(db, "users"));
-          const students = snapshot.docs.map((doc, index) => ({
-            userId:doc.id,
-            id: index,
-            ...doc.data(),
-          }));
-          setStudent(students);
           setAdmin(true);
           navigate("/adminhome");
         } else {
@@ -76,7 +68,6 @@ export default function Login() {
           setAdmin(false);
           navigate("/home");
         }
-
         setGlobalMsg("Login Successfully");
       } catch (error) {
         console.error("Auth state error:", error);
