@@ -11,11 +11,12 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import ViewDayIcon from "@mui/icons-material/ViewDay";
 import Modal from "@mui/material/Modal";
 import WorkIcon from "@mui/icons-material/Work";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import {
   Home as HomeIcon,
   Person as ProfileIcon,
@@ -105,22 +106,36 @@ export default function AppDrawer() {
                   }}
                 >
                   <ListItemIcon>
-                    <CalendarMonthIcon/>
+                    <CalendarMonthIcon />
                   </ListItemIcon>
                   <ListItemText>Shift Data</ListItemText>
                 </ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton 
+                <ListItemButton
                   onClick={() => {
                     navigate("/student");
                     setShowDrawer(false);
                   }}
                 >
                   <ListItemIcon>
-                    <Groups2Icon/>
+                    <Groups2Icon />
                   </ListItemIcon>
                   <ListItemText>Student Data</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <Divider />
+              <ListItem>
+                <ListItemButton
+                  onClick={() => {
+                    navigate("/course");
+                    setShowDrawer(false);
+                  }}
+                >
+                  <ListItemIcon>
+                    <HistoryEduIcon />
+                  </ListItemIcon>
+                  <ListItemText>Course</ListItemText>
                 </ListItemButton>
               </ListItem>
               <Divider />

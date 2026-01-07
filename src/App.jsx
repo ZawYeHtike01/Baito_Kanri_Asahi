@@ -26,6 +26,7 @@ import StudentShift from "./admin/Pages/StudentShift";
 import StudentWorkList from "./admin/Pages/StudentWorkList";
 import Student from "./admin/Pages/Student";
 import StudentProfile from "./admin/Pages/StudentProfoile";
+import Course from "./admin/Pages/Course";
 const AppContext = createContext();
 
 const routes = [
@@ -118,7 +119,7 @@ const routes = [
         element: (
           <ProtectedRoute>
             <AdminRoute>
-              <StudentShift/>
+              <StudentShift />
             </AdminRoute>
           </ProtectedRoute>
         ),
@@ -128,7 +129,7 @@ const routes = [
         element: (
           <ProtectedRoute>
             <AdminRoute>
-             <StudentWorkList/>
+              <StudentWorkList />
             </AdminRoute>
           </ProtectedRoute>
         ),
@@ -138,7 +139,7 @@ const routes = [
         element: (
           <ProtectedRoute>
             <AdminRoute>
-             <Student/>
+              <Student />
             </AdminRoute>
           </ProtectedRoute>
         ),
@@ -148,7 +149,17 @@ const routes = [
         element: (
           <ProtectedRoute>
             <AdminRoute>
-             <StudentProfile/>
+              <StudentProfile />
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/course",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+              <Course />
             </AdminRoute>
           </ProtectedRoute>
         ),
@@ -176,6 +187,11 @@ function App() {
   const [checkHour, setCheckHour] = useState({});
   const [course, setCourse] = useState({});
   const [admin, setAdmin] = useState(false);
+  const [studentGridState, setStudentGridState] = useState({
+    paginationModel: { page: 0, pageSize: 10 },
+    filterModel: { items: [] },
+    sortModel: [],
+  });
   const [student, setStudent] = useState([]);
   const [shift, setShift] = useState({});
   const [time, setTime] = useState({});
@@ -206,7 +222,7 @@ function App() {
     const getStudents = async () => {
       const snapshot = await getDocs(collection(db, "users"));
       const students = snapshot.docs.map((doc, index) => ({
-        userId:doc.id,
+        userId: doc.id,
         id: index,
         ...doc.data(),
       }));
@@ -216,11 +232,13 @@ function App() {
   }, [admin]);
 
   useEffect(() => {
-    console.log(userData)
+    console.log(userData);
   }, [admin]);
   return (
     <AppContext.Provider
       value={{
+        studentGridState,
+        setStudentGridState,
         student,
         setStudent,
         admin,

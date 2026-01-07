@@ -146,16 +146,13 @@ export default function StudentShift() {
           if (job.start && job.end) totalHours += getHourDifference(job.start, job.end, job.rest);
         });
       }
-
       for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
         const dateStr = formatDate(d);
         if (isSpecialWeek && totalHours > 40) over40.add(dateStr);
         else if (!isSpecialWeek && totalHours > 28) over28.add(dateStr);
       }
-
       cursor.setDate(cursor.getDate() + 1);
     }
-
     setOvertw(Array.from(new Set([...overtw, ...over28])));
     setOverfw(Array.from(new Set([...overfw, ...over40])));
   };
