@@ -27,6 +27,7 @@ import StudentWorkList from "./admin/Pages/StudentWorkList";
 import Student from "./admin/Pages/Student";
 import StudentProfile from "./admin/Pages/StudentProfoile";
 import Course from "./admin/Pages/Course";
+import CheckLimit from "./admin/Pages/CheckLimit";
 const AppContext = createContext();
 
 const routes = [
@@ -164,6 +165,16 @@ const routes = [
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/checklimit",
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+              <CheckLimit />
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ];
@@ -184,7 +195,7 @@ function App() {
   const [workname, setWorkName] = useState([]);
   const [monthCache, setMonthCache] = useState({});
   const [total, setTotal] = useState();
-  const [checkHour, setCheckHour] = useState({});
+  const [checkHour, setCheckHour] = useState([]);
   const [course, setCourse] = useState({});
   const [admin, setAdmin] = useState(false);
   const [studentGridState, setStudentGridState] = useState({
@@ -221,7 +232,7 @@ function App() {
       const snapshot = await getDocs(collection(db, "users"));
       const students = snapshot.docs.map((doc, index) => ({
         userId: doc.id,
-        id: index,
+        id: index+1,
         ...doc.data(),
       }));
       setStudent(students);

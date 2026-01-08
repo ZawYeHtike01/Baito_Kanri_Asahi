@@ -16,6 +16,7 @@ import ViewDayIcon from "@mui/icons-material/ViewDay";
 import Modal from "@mui/material/Modal";
 import WorkIcon from "@mui/icons-material/Work";
 import Groups2Icon from "@mui/icons-material/Groups2";
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import {
   Home as HomeIcon,
@@ -136,6 +137,19 @@ export default function AppDrawer() {
                     <HistoryEduIcon />
                   </ListItemIcon>
                   <ListItemText>Course</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem>
+                <ListItemButton
+                  onClick={() => {
+                    navigate("/checklimit");
+                    setShowDrawer(false);
+                  }}
+                >
+                  <ListItemIcon>
+                    <AccessTimeFilledIcon/>
+                  </ListItemIcon>
+                  <ListItemText>Week Limit</ListItemText>
                 </ListItemButton>
               </ListItem>
               <Divider />

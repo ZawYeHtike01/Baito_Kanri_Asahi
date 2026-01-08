@@ -147,7 +147,7 @@ export default function Course() {
         </Stack>
       </Box>
 
-      <Box sx={{ px: 3 }}>
+      <Box sx={{ px: 3,maxHeight:"495px",overflow:"auto",minHeight:"495px"}}>
         <Stack spacing={2}>
           {Object.entries(course)
             .sort(([a], [b]) => b - a)
