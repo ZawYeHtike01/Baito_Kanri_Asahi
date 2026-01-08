@@ -125,13 +125,6 @@ export default function StudentProfile() {
               >
                 Edit
               </Button>
-              {/* <Button
-                color="error"
-                startIcon={<DeleteOutlinedIcon />}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button> */}
             </Stack>
           ) : (
             <Stack direction="row" spacing={1}>

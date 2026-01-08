@@ -34,7 +34,7 @@ const columns = [
   },
 ];
 
-const paginationModel = { page: 0, pageSize: 10 };
+
 export default function ShiftData() {
   const navigate = useNavigate();
   const { student, studentGridState, setStudentGridState } = useApp();

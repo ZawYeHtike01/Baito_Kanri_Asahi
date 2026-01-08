@@ -9,7 +9,6 @@ import {
 } from '@mui/icons-material';
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { getIdTokenResult } from "firebase/auth";
 import { useApp } from "../App";
@@ -41,19 +40,21 @@ const LandingPage = () => {
           setAdmin(false);
           return;
         }
-  
-        
-        const snap = await getDoc(doc(db, "users", user.uid));
         const token = await getIdTokenResult(user);
         const isAdmin = token.claims.admin === true;
-  
-       setUserData(snap.data());
         setisAuth(true);
-        setGlobalMsg("Login Successfully");
         if (isAdmin) {
-          navigate("/adminhome");
+          const snap = await getDoc(doc(db, "admin", user.uid));
+          setUserData(snap.data());
           setAdmin(true);
-        } else navigate("/home");
+          navigate("/adminhome");
+        } else {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          setUserData(snap.data());
+          setAdmin(false);
+          navigate("/home");
+        }
+        setGlobalMsg("Login Successfully");
       });
   
       return () => unsub();

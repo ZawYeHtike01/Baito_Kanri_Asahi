@@ -193,8 +193,6 @@ function App() {
     sortModel: [],
   });
   const [student, setStudent] = useState([]);
-  const [shift, setShift] = useState({});
-  const [time, setTime] = useState({});
   useEffect(() => {
     async function fetchHolidays() {
       const year = currentDate.getFullYear();

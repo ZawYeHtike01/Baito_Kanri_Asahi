@@ -5,7 +5,6 @@ import { ArrowBack, ArrowForward, Flag, Weekend } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import dayjs from "dayjs";
 import { getHourDifference } from "./Data";
 import {
   Box,
@@ -306,7 +305,7 @@ export default function Home() {
   useEffect(() => {
     if (!checkHour) return;
     checkOver();
-  }, [checkHour, currentDate]);
+  }, [checkHour, monthCache, currentDate]);
 
   const itOver = (date) => {
     if (!date) return false;
