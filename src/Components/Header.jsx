@@ -14,6 +14,10 @@ export default function Header() {
   const { setShowDrawer } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
+  const isShift=location.pathname.startsWith("/shiftdata");
+  const isStudent=location.pathname.startsWith("/student");
+  const isCourse=location.pathname.startsWith("/course");
+  const isLimit=location.pathname.startsWith("/checklimit");
   const isStudentDayData =
   location.pathname.startsWith("/shiftdata/") || location.pathname.startsWith("/home/worklist") || location.pathname.startsWith("/student/");
   return (
@@ -38,7 +42,7 @@ export default function Header() {
         )}
 
         <Box component="img" src={logo} alt="Logo" sx={{ width: 50 }} />
-        <Typography sx={{ flexGrow: 1, ml: 2 }}>Baito_Kanri_Asahi</Typography>
+        <Typography sx={{ flexGrow: 1, ml: 2 }}>{isShift? "Student's Shift Data" : isStudent ?  "Student's Data" : isCourse ? "Course" : isLimit ? "Weekly Limit" :"Baito Kanri"}</Typography>
       </Toolbar>
     </AppBar>
   );

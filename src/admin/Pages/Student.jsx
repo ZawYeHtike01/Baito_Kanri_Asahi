@@ -21,16 +21,15 @@ export default function Student() {
   return (
     <Box
       sx={{
-        marginTop: { xs: "55px", sm: "55px", md: "70px" },
-        width: { xs: "100%", sm: "100%", md: "90%" },
-        background: "rgba(255, 255, 255, 0.2)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-        borderRadius: "10px",
-        height: "100vh",
-        maxHeight: "600px",
-        px: 2,
+        mt: { xs: "56px", md: "72px" },
+        width: { xs: "100%", sm: "100%", md: "100%", lg: "100%" },
+        mx: "auto",
+        background: "rgba(255,255,255,0.25)",
+        backdropFilter: "blur(12px)",
+        borderRadius: { xs: 0, sm: 4 },
+        border: "1px solid rgba(255,255,255,0.18)",
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
+        overflow: "hidden",
       }}
     >
       <DataGrid

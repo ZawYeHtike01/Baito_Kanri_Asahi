@@ -104,14 +104,15 @@ export default function Course() {
   return (
     <Box
       sx={{
-        mt: { xs: "55px", md: "70px" },
-        width: { xs: "100%", md: "40%" },
-        background: "rgba(255,255,255,0.2)",
-        backdropFilter: "blur(10px)",
-        borderRadius: 3,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-        height: "100vh",
-        maxHeight: 650,
+        mt: { xs: "56px", md: "72px" },
+        width: { xs: "100%", sm: "90%", md: "50%", lg: "40%" },
+        mx: "auto",
+        background: "rgba(255,255,255,0.25)",
+        backdropFilter: "blur(12px)",
+        borderRadius: { xs: 0, sm: 4 },
+        border: "1px solid rgba(255,255,255,0.18)",
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
+        overflow: "hidden",
       }}
     >
       <Box p={3}>

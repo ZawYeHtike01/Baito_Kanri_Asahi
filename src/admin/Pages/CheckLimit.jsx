@@ -58,12 +58,12 @@ export default function CheckLimit() {
     };
 
     await setDoc(doc(db, "time", holidayName), payload);
-
     setCheckHour((prev) => [...prev, { id: holidayName, ...payload }]);
-    setAddModal(false);
+
     setHolidayName("");
     setStartDate(null);
     setEndDate(null);
+    setAddModal(false);
     setGlobalMsg("Added successfully!");
   };
 
@@ -93,44 +93,64 @@ export default function CheckLimit() {
   return (
     <Box
       sx={{
-        mt: { xs: "55px", md: "70px" },
-        width: { xs: "100%", md: "40%" },
+        mt: { xs: "56px", md: "72px" },
+        width: { xs: "100%", sm: "90%", md: "50%", lg: "40%" },
         mx: "auto",
         background: "rgba(255,255,255,0.25)",
         backdropFilter: "blur(12px)",
-        borderRadius: 4,
-        boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
-        maxHeight: 650,
-        overflow: "auto",
+        borderRadius: { xs: 0, sm: 4 },
+        border: "1px solid rgba(255,255,255,0.18)",
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
+        overflow: "hidden",
       }}
     >
-      <Box p={3} display="flex" justifyContent="space-between">
-        <Typography variant="h5" fontWeight={700}>
+      {/* Header */}
+      <Box
+        p={{ xs: 2, sm: 3 }}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Typography fontWeight={700} fontSize={{ xs: "1rem", sm: "1.25rem" }}>
           Hour Management
         </Typography>
+
         <IconButton color="primary" onClick={() => setAddModal(true)}>
           <AddIcon />
         </IconButton>
       </Box>
 
+      {/* List */}
       <Stack
-        sx={{ maxHeight: "495px", overflow: "auto",minHeight:"495px" }}
-        spacing={2}
-        px={3}
-        pb={3}
+        sx={{
+          px: { xs: 2, sm: 3 },
+          pb: 3,
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+          gap: 2,
+          overflowY: "auto",
+          minHeight: 400,
+        }}
       >
         {checkHour.map((item) => (
           <Card
             key={item.id}
+            elevation={0}
             sx={{
               borderRadius: 3,
-              background:
-                "linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4))",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+              background: "rgba(255,255,255,0.6)",
+              border: "1px solid rgba(0,0,0,0.08)",
+              height: editTarget?.id === item.id ? 220 : 80,
             }}
           >
             <CardContent
-              sx={{ display: "flex", justifyContent: "space-between" }}
+              sx={{
+                display: "flex",
+                // flexDirection: { xs: "column", sm: "row" },
+                flexDirection:"row",
+                justifyContent: "space-between",
+                
+              }}
             >
               <Box>
                 {editTarget?.id === item.id ? (
@@ -160,6 +180,7 @@ export default function CheckLimit() {
                         color="success"
                         startIcon={<SaveOutlinedIcon />}
                         onClick={handleUpdate}
+                        disabled={editTarget.start.isAfter(editTarget.end)}
                       >
                         Save
                       </Button>
@@ -182,11 +203,11 @@ export default function CheckLimit() {
                   </>
                 )}
               </Box>
-              {editTarget?.id === item.id ? (
-                <></>
-              ) : (
-                <Stack direction="row">
+
+              {editTarget?.id !== item.id && (
+                <Stack direction="row" spacing={1} justifyContent="flex-end">
                   <IconButton
+                    size="small"
                     onClick={() =>
                       setEditTarget({
                         ...item,
@@ -195,13 +216,14 @@ export default function CheckLimit() {
                       })
                     }
                   >
-                    <EditOutlinedIcon />
+                    <EditOutlinedIcon fontSize="small" />
                   </IconButton>
                   <IconButton
+                    size="small"
                     color="error"
                     onClick={() => setDeleteTarget(item)}
                   >
-                    <DeleteOutlinedIcon />
+                    <DeleteOutlinedIcon fontSize="small" />
                   </IconButton>
                 </Stack>
               )}
@@ -210,16 +232,18 @@ export default function CheckLimit() {
         ))}
       </Stack>
 
+      {/* Add Modal */}
       <Modal open={addModal} onClose={() => setAddModal(false)}>
         <Box
           sx={{
             position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%,-50%)",
-            width: 360,
+            top: { xs: 0, sm: "50%" },
+            left: { xs: 0, sm: "50%" },
+            transform: { xs: "none", sm: "translate(-50%,-50%)" },
+            width: { xs: "100%", sm: 360 },
+            height: { xs: "100%", sm: "auto" },
             p: 3,
-            borderRadius: 3,
+            borderRadius: { xs: 0, sm: 3 },
             bgcolor: "background.paper",
           }}
         >
@@ -235,21 +259,18 @@ export default function CheckLimit() {
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Start Date"
-                value={startDate}
-                onChange={setStartDate}
-              />
-              <DatePicker
-                label="End Date"
-                value={endDate}
-                onChange={setEndDate}
-              />
+              <DatePicker label="Start" value={startDate} onChange={setStartDate} />
+              <DatePicker label="End" value={endDate} onChange={setEndDate} />
             </LocalizationProvider>
 
             <Button
               variant="contained"
-              disabled={!holidayName || !startDate || !endDate}
+              disabled={
+                !holidayName ||
+                !startDate ||
+                !endDate ||
+                startDate.isAfter(endDate)
+              }
               onClick={handleAdd}
             >
               Add
@@ -258,6 +279,7 @@ export default function CheckLimit() {
         </Box>
       </Modal>
 
+      {/* Delete Modal */}
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
         <Box
           sx={{
