@@ -44,7 +44,7 @@ export default function CheckLimit() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const snap = await getDocs(collection(db, "time"));
+      const snap = await getDocs(collection(db, "time","holiday","hours"));
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       setCheckHour(data);
     };
@@ -57,7 +57,7 @@ export default function CheckLimit() {
       end: endDate.format("YYYY-MM-DD"),
     };
 
-    await setDoc(doc(db, "time", holidayName), payload);
+    await setDoc(doc(db, "time","holiday","hours", holidayName), payload);
     setCheckHour((prev) => [...prev, { id: holidayName, ...payload }]);
 
     setHolidayName("");
@@ -73,7 +73,7 @@ export default function CheckLimit() {
       end: editTarget.end.format("YYYY-MM-DD"),
     };
 
-    await updateDoc(doc(db, "time", editTarget.id), payload);
+    await updateDoc(doc(db, "time","holiday","hours", editTarget.id), payload);
 
     setCheckHour((prev) =>
       prev.map((i) => (i.id === editTarget.id ? { ...i, ...payload } : i))
@@ -84,7 +84,7 @@ export default function CheckLimit() {
   };
 
   const handleDelete = async () => {
-    await deleteDoc(doc(db, "time", deleteTarget.id));
+    await deleteDoc(doc(db, "time","holiday","hours", deleteTarget.id));
     setCheckHour((prev) => prev.filter((i) => i.id !== deleteTarget.id));
     setDeleteTarget(null);
     setGlobalMsg("Deleted successfully!");

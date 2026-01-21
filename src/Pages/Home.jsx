@@ -285,13 +285,13 @@ export default function Home() {
   };
 
   const getLimit = async () => {
-    const q = collection(db, "time");
+    const q = collection(db, "time","holiday","hours");
     const snap = await getDocs(q);
     const data = snap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    setCheckHour(data);
+    setCheckHour(data || {});
   };
   useEffect(() => {
     try {
