@@ -46,12 +46,11 @@ export default function StudentWorkList() {
     <Box
       sx={{
         width: { xs: "95%", sm: "450px", md: "400px" },
-        height: 550,
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
         position: "relative",
         background: "rgba(255, 255, 255, 0.02)",
         backdropFilter: "blur(15px)",
         border: "1px solid rgba(255, 255, 255, 0.1)",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
         borderRadius: "28px",
         display: "flex",
         flexDirection: "column",

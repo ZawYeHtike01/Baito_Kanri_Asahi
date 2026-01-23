@@ -11,17 +11,11 @@ export default function Profile() {
   return (
     <Box
       sx={{
-        width: { xs: "95%", md: "32%" },
+        width: { xs: "100%", md: "32%" },
         mx: "auto",
         mt: { xs: "60px", md: "80px" },
-        borderRadius: "24px",
-        height: "100vh",
-        minHeight:"700px",
-        maxHeight: "800px",
-        overflow:"hidden",
-        background: "rgba(255,255,255,0.75)",
-        backdropFilter: "blur(14px)",
-        boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
+        overflow:"auto",
       }}
     >
       <Box

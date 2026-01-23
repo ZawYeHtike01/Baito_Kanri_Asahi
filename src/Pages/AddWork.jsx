@@ -150,12 +150,7 @@ export default function AddWork() {
       <Box
         sx={{
           width: { xs: "95%", sm: "450px", md: "400px" },
-          height: 540,
-          background: "rgba(255, 255, 255, 0.02)",
-          backdropFilter: "blur(15px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
-          borderRadius: "28px",
+          maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
           display: "flex",
           flexDirection: "column",
           mt: "70px",

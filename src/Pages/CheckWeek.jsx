@@ -64,17 +64,12 @@ export default function CheckWeek() {
     <Box
       sx={{
         width: { xs: "92%", sm: "55%", md: "360px" },
-        height: 420,
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
         mt: "80px",
         p: 3,
-        borderRadius: 4,
-        backdropFilter: "blur(12px)",
-        background: "rgba(255,255,255,0.15)",
-        border: "1px solid rgba(255,255,255,0.25)",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
+        gap:5
       }}
     >
       <Typography variant="h6" textAlign="center" fontWeight="bold">

@@ -319,15 +319,14 @@ export default function Home() {
     <Box
       sx={{
         width: { xs: "100%", sm: "100%", md: "50%" },
-        height: "100vh",
-        maxHeight: "600px",
+        maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
         display: "flex",
         flexDirection: "column",
         fontFamily: "Arial, sans-serif",
         background: "rgba(255, 255, 255, 0.2)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+        // boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
         borderRadius: "10px",
         marginTop: { xs: "55px", sm: "55px", md: "70px" },
       }}
@@ -339,7 +338,7 @@ export default function Home() {
           alignItems: "center",
           p: "12px 16px",
           borderBottom: "1px solid #ddd",
-          backgroundColor: "#f8f9fa",
+          // backgroundColor: "#f8f9fa",
         }}
       >
         <IconButton onClick={handlePrevMonth}>
