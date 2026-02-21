@@ -12,6 +12,7 @@ import {
   Fab,
   InputAdornment,
 } from "@mui/material";
+import { useSwipeable } from "react-swipeable";
 import {
   Add as AddIcon,
   DeleteOutline as DeleteIcon,
@@ -52,6 +53,7 @@ export default function WorkList() {
     monthCache,
     setMonthCache,
     setGlobalMsg,
+    setSelectedDate,
   } = useApp();
   const navigate = useNavigate();
   const user = auth.currentUser;
@@ -60,7 +62,7 @@ export default function WorkList() {
   const monthKey = `${y}-${m}`;
   const todayShifts = monthCache[monthKey]?.[selectedDate] || {};
   const filteredHoliday = JapanseHolidays.filter(
-    (i) => i.date === selectedDate
+    (i) => i.date === selectedDate,
   );
 
   const [loading, setLoading] = useState(false);
@@ -73,6 +75,21 @@ export default function WorkList() {
   const [rest, setRest] = useState(dayjs());
   const [salary, setSalary] = useState(0);
   const [deleteInfo, setDeleteInfo] = useState({ date: "", name: "" });
+
+  const swip = useSwipeable({
+    delta: 50,
+    trackTouch: true,
+    trackMouse: true,
+    preventScrollOnSwipe: true,
+
+    onSwipedLeft: () =>
+      setSelectedDate(dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD")),
+
+    onSwipedRight: () =>
+      setSelectedDate(
+        dayjs(selectedDate).subtract(1, "day").format("YYYY-MM-DD"),
+      ),
+  });
 
   const updateItem = async () => {
     const ref = doc(db, "shifts", user.uid, "workshifts", selectedDate);
@@ -117,6 +134,7 @@ export default function WorkList() {
 
   return (
     <Box
+      {...swip}
       sx={{
         width: { xs: "95%", sm: "450px", md: "400px" },
         maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
@@ -126,6 +144,7 @@ export default function WorkList() {
         mt: "70px",
         mx: "auto",
         overflow: "hidden",
+        touchAction: "pan-y",
       }}
     >
       {loading && (
@@ -221,12 +240,10 @@ export default function WorkList() {
                   onClick={() => {
                     setWork(key);
                     setStartTime(
-                      item.start ? dayjs(item.start, "HH:mm") : dayjs()
+                      item.start ? dayjs(item.start, "HH:mm") : dayjs(),
                     );
                     setEndTime(item.end ? dayjs(item.end, "HH:mm") : dayjs());
-                    setRest(
-                      dayjs(item.rest, "HH:mm")
-                    );
+                    setRest(dayjs(item.rest, "HH:mm"));
                     setSalary(Number(item.salary || 0));
                     setUpdateModal(true);
                   }}

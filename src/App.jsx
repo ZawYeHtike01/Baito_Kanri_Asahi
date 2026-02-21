@@ -241,9 +241,7 @@ function App() {
     getStudents();
   }, [admin]);
 
-  useEffect(() => {
-    console.log(userData);
-  }, [admin]);
+
   return (
     <AppContext.Provider
       value={{
