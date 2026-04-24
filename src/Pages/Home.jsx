@@ -43,6 +43,7 @@ export default function Home() {
     setTotal,
     checkHour,
     setCheckHour,
+    work,
   } = useApp();
   const navigate = useNavigate();
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -88,7 +89,7 @@ export default function Home() {
   const handlePrevMonth = () => {
     const newDate = new Date(
       currentDate.getFullYear(),
-      currentDate.getMonth() - 1
+      currentDate.getMonth() - 1,
     );
     setCurrentDate(newDate);
   };
@@ -96,13 +97,13 @@ export default function Home() {
   const handleNextMonth = () => {
     const newDate = new Date(
       currentDate.getFullYear(),
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 1,
     );
     setCurrentDate(newDate);
   };
   useEffect(() => {
     const key = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 1,
     ).padStart(2, "0")}`;
 
     const monthData = monthCache[key];
@@ -114,7 +115,11 @@ export default function Home() {
     let sum = 0;
     let ss = 0;
     Object.values(monthData).forEach((dayShift) => {
-      Object.values(dayShift).forEach((s) => {
+      const shifts =
+        work === "all" ? Object.values(dayShift) : [dayShift?.[work]];
+
+      shifts.forEach((s) => {
+        if (!s?.start || !s?.end) return;
         const hours = getHourDifference(s.start, s.end, s.rest);
         sum += hours;
         ss += hours * s.salary;
@@ -122,33 +127,33 @@ export default function Home() {
     });
     setSal(Number(ss.toFixed(0)));
     setTotal(Number(sum.toFixed(1)));
-  }, [monthCache, currentDate]);
+  }, [monthCache, currentDate,work]);
   const getItem = async () => {
     const user = auth.currentUser;
     const key = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 1,
     ).padStart(2, "0")}`;
     if (monthCache[key]) return monthCache[key];
     const firstDate = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 1,
     ).padStart(2, "0")}-01`;
     const lastDay = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + 1,
-      0
+      0,
     ).getDate();
     const lastDate = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
+      currentDate.getMonth() + 1,
     ).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
     try {
       const workshiftsCol = collection(
         doc(db, "shifts", user.uid),
-        "workshifts"
+        "workshifts",
       );
       const q = query(
         workshiftsCol,
         where(documentId(), ">=", firstDate),
-        where(documentId(), "<=", lastDate)
+        where(documentId(), "<=", lastDate),
       );
       const snap = await getDocs(q);
       const map = {};
@@ -175,7 +180,7 @@ export default function Home() {
   const isHolidays = (date) => {
     if (!date) return false;
     const filterDate = JapanseHolidays.filter(
-      (i) => i.date === FormartDate(date)
+      (i) => i.date === FormartDate(date),
     );
     if (filterDate.length > 0) {
       return true;
@@ -190,7 +195,7 @@ export default function Home() {
   const days = getDaysInMonth(currentDate);
   const formatDate = (d) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-      d.getDate()
+      d.getDate(),
     ).padStart(2, "0")}`;
 
   const getMonthKey = (d) =>
@@ -285,7 +290,7 @@ export default function Home() {
   };
 
   const getLimit = async () => {
-    const q = collection(db, "time","holiday","hours");
+    const q = collection(db, "time", "holiday", "hours");
     const snap = await getDocs(q);
     const data = snap.docs.map((doc) => ({
       id: doc.id,
@@ -301,6 +306,7 @@ export default function Home() {
       console.log(e.message);
     }
   }, [currentDate]);
+  
 
   useEffect(() => {
     if (!checkHour) return;
@@ -326,7 +332,6 @@ export default function Home() {
         background: "rgba(255, 255, 255, 0.2)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(255, 255, 255, 0.3)",
-        // boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
         borderRadius: "10px",
         marginTop: { xs: "55px", sm: "55px", md: "70px" },
       }}
@@ -338,7 +343,6 @@ export default function Home() {
           alignItems: "center",
           p: "12px 16px",
           borderBottom: "1px solid #ddd",
-          // backgroundColor: "#f8f9fa",
         }}
       >
         <IconButton onClick={handlePrevMonth}>
@@ -424,15 +428,24 @@ export default function Home() {
                 const dd = FormartDate(date);
 
                 const key = `${currentDate.getFullYear()}-${String(
-                  currentDate.getMonth() + 1
+                  currentDate.getMonth() + 1,
                 ).padStart(2, "0")}`;
                 const shift = monthCache[key]?.[dd];
 
                 let time = "";
                 if (shift && Object.keys(shift).length > 0) {
-                  const firstKey = Object.keys(shift)[0];
-                  const s = shift[firstKey];
-                  time = `(${s.start}-${s.end})`;
+                  let s = null;
+
+                  if (work === "all") {
+                    const firstKey = Object.keys(shift)[0];
+                    s = shift[firstKey]; // just pick first job
+                  } else {
+                    s = shift[work]; // ✅ directly access "Kura"
+                  }
+
+                  if (s?.start != null && s?.end != null) {
+                    time = `(${s.start}-${s.end})`;
+                  }
                 }
 
                 return (
@@ -451,8 +464,8 @@ export default function Home() {
                         color: isToday(date)
                           ? "white"
                           : isHolidays(date)
-                          ? "white"
-                          : "#333",
+                            ? "white"
+                            : "#333",
                         width: "28px",
                         height: "28px",
                         borderRadius: "50%",
@@ -462,8 +475,8 @@ export default function Home() {
                         backgroundColor: isToday(date)
                           ? "#1976d2"
                           : isHolidays(date)
-                          ? "red"
-                          : "transparent",
+                            ? "red"
+                            : "transparent",
                       }}
                     >
                       {date.getDate()}

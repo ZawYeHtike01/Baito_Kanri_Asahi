@@ -1,8 +1,4 @@
-import {
-  Box,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -10,14 +6,19 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import { useApp } from "../App";
 import { getHourDifference } from "./Data";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 export default function CheckWeek() {
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [time, setTime] = useState("0.0 hours");
   const [sal, setSal] = useState("0 ￥");
+  const [www, setWww] = useState("all");
 
-  const { monthCache } = useApp();
+  const { monthCache, workname } = useApp();
 
   const check = () => {
     if (!start || !end || start.isAfter(end)) return;
@@ -32,24 +33,21 @@ export default function CheckWeek() {
 
       const dayData = monthCache?.[monthKey]?.[dateKey];
       if (dayData) {
-        Object.values(dayData).forEach((job) => {
-          if (!job.start || !job.end) return;
+        const jobs = www === "all" ? Object.values(dayData) : [dayData?.[www]];
+        jobs.forEach((job) => {
+          if (!job?.start || !job?.end) return;
 
-          const minutes = getHourDifference(
-            job.start,
-            job.end,
-            job.rest
-          );
+          const hours = getHourDifference(job.start, job.end, job.rest);
 
-          totalMinutes += minutes;
-          totalSalary += minutes * job.salary;
+          totalMinutes += hours;
+          totalSalary += hours * job.salary;
         });
       }
 
       current = current.add(1, "day");
     }
 
-    setTime(`${(totalMinutes).toFixed(1)} hours`);
+    setTime(`${totalMinutes.toFixed(1)} hours`);
     setSal(`${Math.round(totalSalary).toLocaleString()} ￥`);
   };
 
@@ -69,7 +67,7 @@ export default function CheckWeek() {
         p: 3,
         display: "flex",
         flexDirection: "column",
-        gap:5
+        gap: 5,
       }}
     >
       <Typography variant="h6" textAlign="center" fontWeight="bold">
@@ -78,16 +76,28 @@ export default function CheckWeek() {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <DatePicker
-            label="From"
-            value={start}
-            onChange={setStart}
-          />
-          <DatePicker
-            label="To"
-            value={end}
-            onChange={setEnd}
-          />
+          <DatePicker label="From" value={start} onChange={setStart} />
+          <DatePicker label="To" value={end} onChange={setEnd} />
+          <Box sx={{ minWidth: 100 }}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Work</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Select Work"
+                onChange={(e) => {
+                  setWww(e.target.value);
+                }}
+              >
+                <MenuItem value="all">All</MenuItem>
+                {workname.map((e) => (
+                  <MenuItem key={e.id || e.work} value={e.work}>
+                    {e.work}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
       </LocalizationProvider>
       <Box sx={{ display: "flex", gap: 1 }}>
@@ -99,11 +109,7 @@ export default function CheckWeek() {
         >
           Check
         </Button>
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={clear}
-        >
+        <Button variant="outlined" fullWidth onClick={clear}>
           Clear
         </Button>
       </Box>

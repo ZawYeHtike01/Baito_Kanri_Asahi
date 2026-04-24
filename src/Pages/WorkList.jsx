@@ -12,7 +12,7 @@ import {
   Fab,
   InputAdornment,
 } from "@mui/material";
-import { useSwipeable } from "react-swipeable";
+// import { useSwipeable } from "react-swipeable";
 import {
   Add as AddIcon,
   DeleteOutline as DeleteIcon,
@@ -76,20 +76,7 @@ export default function WorkList() {
   const [salary, setSalary] = useState(0);
   const [deleteInfo, setDeleteInfo] = useState({ date: "", name: "" });
 
-  const swip = useSwipeable({
-    delta: 50,
-    trackTouch: true,
-    trackMouse: true,
-    preventScrollOnSwipe: true,
-
-    onSwipedLeft: () =>
-      setSelectedDate(dayjs(selectedDate).add(1, "day").format("YYYY-MM-DD")),
-
-    onSwipedRight: () =>
-      setSelectedDate(
-        dayjs(selectedDate).subtract(1, "day").format("YYYY-MM-DD"),
-      ),
-  });
+  
 
   const updateItem = async () => {
     const ref = doc(db, "shifts", user.uid, "workshifts", selectedDate);
@@ -134,7 +121,6 @@ export default function WorkList() {
 
   return (
     <Box
-      {...swip}
       sx={{
         width: { xs: "95%", sm: "450px", md: "400px" },
         maxHeight: { xs: "calc(100vh - 56px)", md: 650 },
@@ -144,7 +130,6 @@ export default function WorkList() {
         mt: "70px",
         mx: "auto",
         overflow: "hidden",
-        touchAction: "pan-y",
       }}
     >
       {loading && (
@@ -194,11 +179,13 @@ export default function WorkList() {
       </Box>
 
       <Box
+        
         sx={{
           flexGrow: 1,
           overflowY: "auto",
           px: 2,
           py: 2,
+          touchAction: "pan-y",
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >

@@ -198,6 +198,7 @@ function App() {
   const [checkHour, setCheckHour] = useState([]);
   const [course, setCourse] = useState({});
   const [admin, setAdmin] = useState(false);
+  const [work,setWork]=useState('all');
   
   const [studentGridState, setStudentGridState] = useState({
     paginationModel: { page: 0, pageSize: 10 },
@@ -245,6 +246,8 @@ function App() {
   return (
     <AppContext.Provider
       value={{
+        work,
+        setWork,
         studentGridState,
         setStudentGridState,
         student,
