@@ -433,14 +433,21 @@ export default function Home() {
                 const shift = monthCache[key]?.[dd];
 
                 let time = "";
+                let TotalToday="";
                 if (shift && Object.keys(shift).length > 0) {
                   let s = null;
 
                   if (work === "all") {
                     const firstKey = Object.keys(shift)[0];
-                    s = shift[firstKey]; // just pick first job
+                    s = shift[firstKey];
+                    if (s?.start != null && s?.end != null) {
+                    TotalToday+=getHourDifference(s?.start,s?.end,s?.rest);
+                  }
                   } else {
-                    s = shift[work]; // ✅ directly access "Kura"
+                    s = shift[work]; 
+                    if (s?.start != null && s?.end != null) {
+                    TotalToday+=getHourDifference(s?.start,s?.end,s?.rest);
+                  }
                   }
 
                   if (s?.start != null && s?.end != null) {
@@ -482,6 +489,7 @@ export default function Home() {
                       {date.getDate()}
                     </Box>
                     <Typography sx={{ fontSize: "12px" }}>{time}</Typography>
+                   {TotalToday!="" && <Typography sx={{ fontSize: "10px" }}>{TotalToday} H</Typography>} 
                   </Box>
                 );
               })()}
