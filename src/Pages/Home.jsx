@@ -315,9 +315,7 @@ export default function Home() {
 
   const itOver = (date) => {
     if (!date) return false;
-
     const d = FormartDate(date);
-
     return overfw.some((e) => e === d) || overtw.some((e) => e === d);
   };
 

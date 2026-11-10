@@ -28,6 +28,7 @@ import Student from "./admin/Pages/Student";
 import StudentProfile from "./admin/Pages/StudentProfoile";
 import Course from "./admin/Pages/Course";
 import CheckLimit from "./admin/Pages/CheckLimit";
+import SnowTheme from "./Pages/SnowTheme"
 const AppContext = createContext();
 
 const routes = [
@@ -282,6 +283,7 @@ function App() {
     >
       <RouterProvider router={router} />
       <CssBaseline />
+      <SnowTheme/>
     </AppContext.Provider>
   );
 }
